@@ -92,11 +92,7 @@ border-radius: 4px;
 <div id="loginScreen" class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 flex items-center justify-center p-4">
 <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md scale-in border border-amber-500">
 <div class="text-center mb-8">
-<img
-src="https://media-bog2-1.cdn.whatsapp.net/v/t61.24694-24/518969449_1751592388793487_2205738987564206197_n.jpg?ccb=11-4&oh=01_Q5Aa3AGbMlIpuygi7r2MlJ-yt0QrWAIGZidbVYIL1KTxkuc8Ww&oe=6936AF2D&_nc_sid=5e03e0&_nc_cat=106"
-alt="Pollos Semicriollos"
-class="w-28 h-28 rounded-full object-cover shadow-lg border-4 border-amber-500 mx-auto"
->
+<img src="img/logo.png" alt="Pollos Semicriollos" class="w-28 h-28 rounded-full object-cover shadow-lg border-4 border-amber-500 mx-auto">
 <h1 class="text-3xl font-bold text-gray-800 mb-2">Pollos Semicriollos</h1>
 <p class="text-gray-600">Control de Costos, Gastos y Ventas</p>
 </div>
@@ -146,7 +142,7 @@ Ingresar al Sistema
 <div class="flex justify-between items-center h-16">
 <div class="flex items-center space-x-3">
 <img
-src="https://media-bog2-1.cdn.whatsapp.net/v/t61.24694-24/518969449_1751592388793487_2205738987564206197_n.jpg?ccb=11-4&oh=01_Q5Aa3AGbMlIpuygi7r2MlJ-yt0QrWAIGZidbVYIL1KTxkuc8Ww&oe=6936AF2D&_nc_sid=5e03e0&_nc_cat=106"
+src="img/logo.png"
 alt="Logo"
 class="h-10 w-10 rounded-full object-cover border-2 border-amber-500 shadow"
 >
@@ -442,7 +438,7 @@ class="flex items-center bg-amber-600 hover:bg-amber-700 text-white font-medium 
 <div id="pdfContent" class="hidden">
 <div id="pdfReport" style="width:210mm;padding:20mm;font-family:'Poppins',Arial,sans-serif;line-height:1.6;color:#374151;font-size:12px;">
 <div style="text-align:center;margin-bottom:25px;">
-<img src="https://media-bog2-1.cdn.whatsapp.net/v/t61.24694-24/518969449_1751592388793487_2205738987564206197_n.jpg?ccb=11-4&oh=01_Q5Aa3AGbMlIpuygi7r2MlJ-yt0QrWAIGZidbVYIL1KTxkuc8Ww&oe=6936AF2D&_nc_sid=5e03e0&_nc_cat=106" style="width:60px;height:60px;border-radius:50%;border:2px solid #d97706;margin:0 auto 10px;">
+<img src="img/logo.png" style="width:60px;height:60px;border-radius:50%;border:2px solid #d97706;margin:0 auto 10px;">
 <h1 style="font-size:20px;color:#7c2d12;font-weight:bold;">Pollos Semicriollos</h1>
 <p style="font-size:14px;color:#ea580c;">Informe Financiero Completo</p>
 <p id="pdfDate" style="font-size:12px;color:#6b7280;margin-top:8px;"></p>
@@ -471,11 +467,10 @@ Generado el <span id="pdfGeneratedAt"></span>
 </div>
 </div>
 </div>
-
 <!-- Recibo Template -->
 <div id="receiptTemplate" class="hidden" style="width:80mm;font-family:'Poppins';font-size:10px;padding:8mm;line-height:1.4;color:#1f2937;background:white;">
 <div style="text-align:center;margin-bottom:6px;">
-<img src="https://media-bog2-1.cdn.whatsapp.net/v/t61.24694-24/518969449_1751592388793487_2205738987564206197_n.jpg?ccb=11-4&oh=01_Q5Aa3AGbMlIpuygi7r2MlJ-yt0QrWAIGZidbVYIL1KTxkuc8Ww&oe=6936AF2D&_nc_sid=5e03e0&_nc_cat=106" style="width:30px;height:30px;border-radius:50%;border:1px solid #d97706;margin:0 auto 4px;">
+<img src="img/logo.png" style="width:30px;height:30px;border-radius:50%;border:1px solid #d97706;margin:0 auto 4px;">
 <strong style="font-size:12px;color:#7c2d12;">Pollos Semicriollos</strong><br>
 <small style="color:#6b7280;">NIT: 123456789-0</small>
 </div>
@@ -491,14 +486,41 @@ Generado el <span id="pdfGeneratedAt"></span>
 <div><strong>Monto:</strong> <span id="receiptAmount">COP $100.000</span></div>
 <div id="receiptCredit" style="display:none;"><strong>Estado:</strong> <span style="color:#dc2626;">CRÉDITO</span></div>
 </div>
+
+<!-- ✅ Contenedor QR + Mensaje legal -->
+<div style="display:flex;gap:8px;margin:8px 0;align-items:flex-start;font-size:8px;color:#666;line-height:1.2;">
+<div style="flex:0 0 60px;" id="receipt-qr-container"></div>
+<div style="flex:1;">
+Este recibo es un comprobante de control interno y no constituye<br>
+una factura de venta ni documento equivalente según el Estatuto Tributario.
+</div>
+</div>
+
+<!-- ✅ Mensaje de Nequi (solo en ventas) -->
+<div id="receipt-payment-info" style="font-size:9px;color:#666;text-align:center;margin-top:6px;display:none;">
+Para realizar el pago de su compra, puede hacerlo<br>
+por transferencia vía Nequi al número:<br>
+<strong>314 4361405</strong><br>
+
+<strong>Tel: 314 4361405</strong> | <strong>elnaranjofincaagropecuaria@gmail.com</strong><br>
+Gracias por su compra
+</div>
+
 <hr style="border:0;border-top:1px dashed #9ca3af;margin:8px 0;">
 <div style="text-align:center;font-size:9px;color:#6b7280;margin-top:6px;">
-Gracias por su compra<br>
 Generado el <span id="receiptGenerated"></span>
 </div>
 </div>
 </div>
 <script>
+// ==============================
+// ✅ FUNCIONES AUXILIARES
+// ==============================
+function generateQR(text, size = 60) {
+const encoded = encodeURIComponent(text);
+return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}`;
+}
+
 // ==============================
 // ✅ PERSISTENCIA (localStorage)
 // ==============================
@@ -525,6 +547,7 @@ localStorage.setItem(STORAGE_KEY, JSON.stringify({
 updatedAt: new Date().toISOString()
 }));
 }
+
 // ==============================
 // ✅ INICIALIZACIÓN
 // ==============================
@@ -532,6 +555,7 @@ let appData = loadFromStorage();
 let currentTab = appData.lastTab;
 let editingId = null;
 let editingNoteId = null;
+
 // DOM Elements
 const loginScreen = document.getElementById('loginScreen');
 const mainApp = document.getElementById('mainApp');
@@ -549,6 +573,7 @@ const notesMonthSelector = document.getElementById('notesMonthSelector');
 const notesMonthInput = document.getElementById('notesMonthInput');
 const downloadAllNotesBtn = document.getElementById('downloadAllNotesBtn');
 const downloadMonthNotesBtn = document.getElementById('downloadMonthNotesBtn');
+
 // Financial
 const tabBtns = document.querySelectorAll('.tab-btn');
 const tabContents = [...document.querySelectorAll('.tab-content')];
@@ -565,6 +590,7 @@ const exportByMonthBtn = document.getElementById('exportByMonthBtn');
 const monthModal = document.getElementById('monthModal');
 const monthFrom = document.getElementById('monthFrom');
 const monthTo = document.getElementById('monthTo');
+
 // Notes
 const notesList = document.getElementById('notesList');
 const noteTitleInput = document.getElementById('noteTitleInput');
@@ -731,7 +757,7 @@ const content = document.createElement('div');
 content.innerHTML = `
 <div style="width:210mm;padding:20mm;font-family:'Poppins';line-height:1.6;color:#374151;">
 <div style="text-align:center;margin-bottom:25px;">
-<img src="https://media-bog2-1.cdn.whatsapp.net/v/t61.24694-24/518969449_1751592388793487_2205738987564206197_n.jpg?ccb=11-4&oh=01_Q5Aa3AGbMlIpuygi7r2MlJ-yt0QrWAIGZidbVYIL1KTxkuc8Ww&oe=6936AF2D&_nc_sid=5e03e0&_nc_cat=106" style="width:60px;height:60px;border-radius:50%;border:2px solid #d97706;margin:0 auto 10px;">
+<img src="img/logo.png" style="width:60px;height:60px;border-radius:50%;border:2px solid #d97706;margin:0 auto 10px;">
 <h1 style="font-size:20px;color:#7c2d12;font-weight:bold;">Pollos Semicriollos</h1>
 <h2 style="font-size:18px;color:#ea580c;margin:8px 0;">${type === 'month' ? `Notas - ${new Date(month + '-01').toLocaleDateString('es-CO', { month: 'long', year: 'numeric' })}` : 'Todas las Notas'}</h2>
 <p style="font-size:12px;color:#6b7280;">${now.toLocaleDateString('es-CO', { dateStyle: 'full' })} • ${notes.length} nota${notes.length !== 1 ? 's' : ''}</p>
@@ -873,6 +899,7 @@ mainApp.classList.remove('hidden');
 calculateTotals();
 renderTables();
 renderNotesList();
+switchTab(appData.lastTab); // Restaurar pestaña guardada
 } else {
 alert('❌ Usuario o contraseña incorrectos.');
 }
@@ -968,6 +995,7 @@ const receiptDiv = document.getElementById('receiptTemplate').cloneNode(true);
 receiptDiv.classList.remove('hidden');
 receiptDiv.id = '';
 
+// Llenar datos básicos
 const typeText = type === 'cost' ? 'RECIBO DE COSTO' : type === 'expense' ? 'RECIBO DE GASTO' : 'RECIBO DE VENTA';
 receiptDiv.querySelector('#receiptType').textContent = typeText;
 receiptDiv.querySelector('#receiptInvoice').textContent = item.invoice || '—';
@@ -976,6 +1004,22 @@ receiptDiv.querySelector('#receiptDesc').textContent = item.description;
 receiptDiv.querySelector('#receiptAmount').textContent = formatCOP(item.amount);
 if (item.credit) {
 receiptDiv.querySelector('#receiptCredit').style.display = 'block';
+}
+
+// ✅ Generar QR con datos relevantes
+const qrText = `${item.invoice || '—'}
+${item.description}
+${formatCOP(item.amount)}
+${formatDate(item.date)}`;
+const qrUrl = generateQR(qrText, 60);
+receiptDiv.querySelector('#receipt-qr-container').innerHTML = `<img src="${qrUrl}" alt="QR" style="width:60px;height:60px;">`;
+
+// ✅ Mostrar mensaje de Nequi solo en ventas
+const paymentInfo = receiptDiv.querySelector('#receipt-payment-info');
+if (type === 'sale') {
+paymentInfo.style.display = 'block';
+} else {
+paymentInfo.style.display = 'none';
 }
 
 const now = new Date();
@@ -1139,7 +1183,7 @@ const content = document.createElement('div');
 content.innerHTML = `
 <div style="width:210mm;padding:20mm;font-family:'Poppins',Arial,sans-serif;line-height:1.6;color:#374151;font-size:12px;">
 <div style="text-align:center;margin-bottom:25px;">
-<img src="https://media-bog2-1.cdn.whatsapp.net/v/t61.24694-24/518969449_1751592388793487_2205738987564206197_n.jpg?ccb=11-4&oh=01_Q5Aa3AGbMlIpuygi7r2MlJ-yt0QrWAIGZidbVYIL1KTxkuc8Ww&oe=6936AF2D&_nc_sid=5e03e0&_nc_cat=106" style="width:60px;height:60px;border-radius:50%;border:2px solid #d97706;margin:0 auto 10px;">
+<img src="img/logo.png" style="width:60px;height:60px;border-radius:50%;border:2px solid #d97706;margin:0 auto 10px;">
 <h1 style="font-size:20px;color:#7c2d12;font-weight:bold;">Pollos Semicriollos</h1>
 <p style="font-size:14px;color:#ea580c;">${title}</p>
 <p style="font-size:12px;color:#6b7280;margin-top:8px;">${now.toLocaleDateString('es-CO', { dateStyle: 'full' })}</p>
@@ -1212,6 +1256,10 @@ currentTab = appData.lastTab;
 calculateTotals();
 renderTables();
 renderNotesList();
+switchTab(currentTab); // Asegurar que se muestre la pestaña correcta
+} else {
+loginScreen.classList.remove('hidden');
+mainApp.classList.add('hidden');
 }
 dateInput.value = new Date().toISOString().split('T')[0];
 // Ensure we have separate counters for each type
