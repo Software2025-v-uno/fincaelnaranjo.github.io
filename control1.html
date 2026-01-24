@@ -7,7 +7,6 @@
 <link rel="icon" href="img/logo.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>window.jsPDF = window.jspdf.jsPDF;</script>
 <style>
 :root {
 --primary: #FF6F00;
@@ -895,6 +894,9 @@ una factura de venta ni documento equivalente según el Estatuto Tributario.
 </div>
 <!-- IndexedDB Helper -->
 <script>
+// Corregir jsPDF
+const { jsPDF } = window.jspdf;
+
 class DBManager {
 constructor() {
 this.db = null;
@@ -902,7 +904,7 @@ this.init();
 }
 init() {
 return new Promise((resolve, reject) => {
-const req = indexedDB.open('FincaElNaranjoDB', 3); // Incremented version for notes
+const req = indexedDB.open('FincaElNaranjoDB', 3);
 req.onerror = () => reject(req.error);
 req.onsuccess = () => {
 this.db = req.result;
@@ -1070,6 +1072,7 @@ function generateQR(text, size = 80) {
 const encoded = encodeURIComponent(text);
 return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}`;
 }
+
 class BusinessManager {
 constructor() {
 this.ventas = [];
@@ -1219,7 +1222,7 @@ y += 12;
 doc.save('blog-de-notas.pdf');
 this.notify('Notas descargadas ✔️');
 }
-// === VENTAS Y GASTOS (sin cambios) ===
+// === VENTAS Y GASTOS ===
 addSale(data) {
 let factura = data.factura || `F-${String(this.nextFacturaNumber).padStart(4, '0')}`;
 db.saveVenta({
@@ -1397,7 +1400,7 @@ n.style.transition = 'opacity 0.5s';
 setTimeout(() => n.remove(), 500);
 }, 2500);
 }
-// === RECEIPTS Y REPORTES (sin cambios) ===
+// === RECEIPTS Y REPORTES ===
 downloadReceipt(saleId) {
 const sale = this.ventas.find(v => v.id === saleId);
 if (!sale) return;
@@ -1407,6 +1410,7 @@ const receiptFactura = document.getElementById('receipt-factura');
 const receiptTotal = document.getElementById('receipt-total');
 const qrContainer = document.getElementById('receipt-qr-container');
 const paymentInfo = document.getElementById('receipt-payment-info');
+
 receiptFactura.textContent = sale.factura;
 receiptTotal.textContent = `$${sale.total.toLocaleString('es-CO')}`;
 let detailsHTML = `
@@ -1420,18 +1424,28 @@ detailsHTML += `<div class="receipt-detail"><span>Crédito:</span><span>$${sale.
 detailsHTML += `<div class="receipt-detail"><span>Fecha:</span><span>${this.formatDateTime(sale.fechaCompleta)}</span></div>`;
 receiptDetails.innerHTML = detailsHTML;
 paymentInfo.style.display = 'block';
+
 const qrText = `${sale.factura}\n${sale.cliente}\n$${sale.total.toLocaleString('es-CO')}\n${this.formatDateTime(sale.fechaCompleta)}`;
 const qrUrl = generateQR(qrText, 80);
 qrContainer.innerHTML = `<img src="${qrUrl}" alt="QR" style="width:80px;height:80px;display:block;margin-left:0;margin-right:auto;">`;
+
 receiptTemplate.style.display = 'block';
-html2canvas(receiptTemplate, { scale: 1 }).then(canvas => {
-const pdf = new jsPDF('p', 'mm', 'a4');
+
+// Esperar a que las imágenes se carguen
+setTimeout(() => {
+html2canvas(receiptTemplate, {
+scale: 2,
+useCORS: true,
+allowTaint: true
+}).then(canvas => {
 const imgData = canvas.toDataURL('image/png');
+const pdf = new jsPDF('p', 'mm', 'a4');
 const imgWidth = 210;
 const pageHeight = 297;
 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 let heightLeft = imgHeight;
 let position = 0;
+
 pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
 heightLeft -= pageHeight;
 while (heightLeft >= 0) {
@@ -1442,7 +1456,12 @@ heightLeft -= pageHeight;
 }
 pdf.save(`recibo-${sale.factura}.pdf`);
 receiptTemplate.style.display = 'none';
+}).catch(error => {
+console.error('Error generando PDF:', error);
+receiptTemplate.style.display = 'none';
+this.notify('Error al generar PDF', 'error');
 });
+}, 100);
 }
 downloadExpenseReceipt(expenseId) {
 const expense = this.gastos.find(g => g.id === expenseId);
@@ -1453,6 +1472,7 @@ const receiptFactura = document.getElementById('receipt-factura');
 const receiptTotal = document.getElementById('receipt-total');
 const qrContainer = document.getElementById('receipt-qr-container');
 const paymentInfo = document.getElementById('receipt-payment-info');
+
 const expenseRef = `G-${expenseId.substring(0, 8)}`;
 receiptFactura.textContent = expenseRef;
 receiptTotal.textContent = `$${expense.monto.toLocaleString('es-CO')}`;
@@ -1466,18 +1486,27 @@ let detailsHTML = `
 receiptDetails.innerHTML = detailsHTML;
 paymentInfo.style.display = 'none';
 document.querySelector('.receipt-title').textContent = 'RECIBO DE GASTO';
+
 const qrText = `${expenseRef}\n$${expense.monto.toLocaleString('es-CO')}\n${this.formatDateTime(expense.fechaCompleta)}`;
 const qrUrl = generateQR(qrText, 80);
 qrContainer.innerHTML = `<div style="text-align:center;"><img src="${qrUrl}" alt="QR" style="width:80px;height:80px;"></div>`;
+
 receiptTemplate.style.display = 'block';
-html2canvas(receiptTemplate, { scale: 1 }).then(canvas => {
-const pdf = new jsPDF('p', 'mm', 'a4');
+
+setTimeout(() => {
+html2canvas(receiptTemplate, {
+scale: 2,
+useCORS: true,
+allowTaint: true
+}).then(canvas => {
 const imgData = canvas.toDataURL('image/png');
+const pdf = new jsPDF('p', 'mm', 'a4');
 const imgWidth = 210;
 const pageHeight = 297;
 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 let heightLeft = imgHeight;
 let position = 0;
+
 pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
 heightLeft -= pageHeight;
 while (heightLeft >= 0) {
@@ -1489,7 +1518,13 @@ heightLeft -= pageHeight;
 pdf.save(`gasto-${expenseId.substring(0, 8)}.pdf`);
 receiptTemplate.style.display = 'none';
 document.querySelector('.receipt-title').textContent = 'RECIBO DE VENTA';
+}).catch(error => {
+console.error('Error generando PDF:', error);
+receiptTemplate.style.display = 'none';
+document.querySelector('.receipt-title').textContent = 'RECIBO DE VENTA';
+this.notify('Error al generar PDF', 'error');
 });
+}, 100);
 }
 generateFullReport() {
 if (this.ventas.length === 0 && this.gastos.length === 0) {
@@ -1508,6 +1543,7 @@ document.getElementById('pdf-neto').textContent = '$' + neto.toLocaleString('es-
 document.getElementById('pdf-total-ingresos').textContent = '$' + ingr.toLocaleString('es-CO');
 document.getElementById('pdf-total-gastos').textContent = '$' + gast.toLocaleString('es-CO');
 document.getElementById('pdf-balance-neto').textContent = '$' + neto.toLocaleString('es-CO');
+
 const pdfSales = document.getElementById('pdf-sales-table');
 if (pdfSales) {
 if (this.ventas.length === 0) {
@@ -1527,6 +1563,7 @@ pdfSales.innerHTML = sorted.map(v => `
 `).join('');
 }
 }
+
 const pdfExpenses = document.getElementById('pdf-expenses-table');
 if (pdfExpenses) {
 if (this.gastos.length === 0) {
@@ -1544,10 +1581,16 @@ pdfExpenses.innerHTML = sorted.map(g => `
 `).join('');
 }
 }
+
 const template = document.getElementById('pdf-template');
 if (template) {
 template.style.display = 'block';
-html2canvas(template, { scale: 1 }).then(canvas => {
+setTimeout(() => {
+html2canvas(template, {
+scale: 2,
+useCORS: true,
+allowTaint: true
+}).then(canvas => {
 const imgData = canvas.toDataURL('image/png');
 const pdf = new jsPDF('p', 'mm', 'a4');
 const imgWidth = 210;
@@ -1555,6 +1598,7 @@ const pageHeight = 297;
 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 let heightLeft = imgHeight;
 let position = 0;
+
 pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
 heightLeft -= pageHeight;
 while (heightLeft >= 0) {
@@ -1566,11 +1610,17 @@ heightLeft -= pageHeight;
 pdf.save(`reporte-finca-el-naranjo-${now.toISOString().slice(0, 10)}.pdf`);
 template.style.display = 'none';
 this.notify('PDF generado exitosamente');
+}).catch(error => {
+console.error('Error generando reporte:', error);
+template.style.display = 'none';
+this.notify('Error al generar reporte', 'error');
 });
+}, 100);
 }
 }
 }
 const businessManager = new BusinessManager();
+
 document.addEventListener('DOMContentLoaded', () => {
 const pinInput = document.getElementById('pin-input');
 pinInput.addEventListener('input', () => {
@@ -1583,7 +1633,7 @@ const val = btn.dataset.value;
 const action = btn.dataset.action;
 if (action === 'clear') pinInput.value = '';
 else if (action === 'enter') {
-if (pinInput.value === '2000') {
+if (pinInput.value === '2007') {
 document.getElementById('pin-screen').style.opacity = '0';
 setTimeout(() => {
 document.getElementById('pin-screen').style.display = 'none';
@@ -1604,14 +1654,8 @@ pinInput.value += val;
 });
 });
 });
-// Eventos de notas
-document.getElementById('guardar-nota')?.addEventListener('click', () => {
-businessManager.saveNote();
-});
-document.getElementById('descargar-notas')?.addEventListener('click', () => {
-businessManager.downloadAllNotes();
-});
-// Eventos de ventas y gastos (sin cambios)
+
+// Eventos
 document.getElementById('agregar-venta')?.addEventListener('click', () => {
 const cliente = document.getElementById('cliente')?.value.trim();
 const factura = document.getElementById('factura')?.value.trim();
@@ -1658,6 +1702,7 @@ document.getElementById('cubetas-debe').value = '0';
 document.getElementById('monto-debe').value = '0';
 document.getElementById('fecha-venta').value = new Date().toISOString().slice(0, 16);
 });
+
 document.getElementById('agregar-gasto')?.addEventListener('click', () => {
 const tipo = document.getElementById('tipo-gasto')?.value;
 const desc = document.getElementById('descripcion-gasto')?.value;
@@ -1677,9 +1722,19 @@ document.getElementById('descripcion-gasto').value = '';
 document.getElementById('monto-gasto').value = '50000';
 document.getElementById('fecha-gasto').value = new Date().toISOString().slice(0, 16);
 });
+
+document.getElementById('guardar-nota')?.addEventListener('click', () => {
+businessManager.saveNote();
+});
+
+document.getElementById('descargar-notas')?.addEventListener('click', () => {
+businessManager.downloadAllNotes();
+});
+
 document.getElementById('generar-pdf')?.addEventListener('click', () => {
 businessManager.generateFullReport();
 });
+
 // === DATOS DEMO INICIALES ===
 setTimeout(async () => {
 const ventas = await db.getAllVentas();
