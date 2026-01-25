@@ -1,1774 +1,981 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Finca El Naranjo | Registro de Ventas y Gastos</title>
-<link rel="icon" href="img/logo.png">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<style>
-:root {
---primary: #FF6F00;
---secondary: #E65100;
---light-orange: #FFB74D;
---dark-orange: #D84315;
---white: #FFFFFF;
---black: #121212;
---gray: #616161;
---light-bg: #FFF8F0;
---medium-bg: #FFE0B2;
---dark-bg: #FFB300;
---card-bg: rgba(255, 255, 255, 0.95);
---border-color: rgba(0,0,0,0.1);
---shadow: 0 6px 16px rgba(0,0,0,0.08);
---hover-shadow: 0 8px 20px rgba(0,0,0,0.1);
---accent: #FFD700;
-}
-* {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
--webkit-tap-highlight-color: transparent;
-}
-body {
-background: linear-gradient(135deg, var(--light-bg) 0%, var(--medium-bg) 50%, var(--dark-bg) 100%);
-min-height: 100vh;
-padding: 12px;
-color: var(--black);
-transition: all 0.3s ease;
-}
-.container {
-max-width: 1200px;
-margin: 0 auto;
-}
-/* PIN Authentication */
-.page-loader {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: linear-gradient(135deg, var(--light-bg) 0%, var(--medium-bg) 50%, var(--dark-bg) 100%);
-display: flex;
-justify-content: center;
-align-items: center;
-z-index: 9999;
-opacity: 1;
-visibility: visible;
-transition: opacity 0.5s ease;
-}
-.pin-container {
-text-align: center;
-background: white;
-padding: 24px 16px;
-border-radius: 16px;
-box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-width: 94%;
-max-width: 400px;
-position: relative;
-overflow: hidden;
-animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-margin: 0 8px;
-}
-.pin-container::before {
-content: '';
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 4px;
-background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
-}
-.pin-logo {
-width: 80px;
-height: 80px;
-background: url('img/logo.png') center/contain no-repeat;
-border-radius: 50%;
-margin: 0 auto 20px;
-animation: pulse 2s infinite;
-}
-.pin-title {
-font-size: 1.8rem;
-color: var(--black);
-margin-bottom: 8px;
-font-weight: 700;
-}
-.pin-subtitle {
-color: var(--gray);
-margin-bottom: 20px;
-font-size: 1rem;
-}
-.pin-input {
-width: 100%;
-padding: 14px 16px;
-border: 2px solid var(--light-orange);
-border-radius: 10px;
-font-size: 1.8rem;
-text-align: center;
-margin-bottom: 20px;
-background: white;
-font-weight: bold;
-transition: all 0.3s ease;
--webkit-text-security: disc;
-text-security: disc;
-caret-color: transparent;
-}
-.pin-pad {
-display: grid;
-grid-template-columns: repeat(3, 1fr);
-gap: 10px;
-margin-bottom: 16px;
-}
-.pin-btn {
-width: 100%;
-height: 52px;
-background: white;
-border: 1.5px solid var(--light-orange);
-border-radius: 10px;
-color: var(--black);
-font-size: 1.4rem;
-font-weight: bold;
-cursor: pointer;
-transition: all 0.15s ease;
-box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-touch-action: manipulation;
-}
-.pin-btn:hover, .pin-btn:active {
-transform: scale(0.98);
-}
-.pin-btn.clear, .pin-btn.enter {
-background: var(--primary);
-color: white;
-font-size: 1.2rem;
-}
-/* Main Layout */
-header {
-text-align: center;
-margin-bottom: 20px;
-padding: 16px;
-background: var(--card-bg);
-border-radius: 14px;
-box-shadow: var(--shadow);
-position: relative;
-overflow: hidden;
-}
-.logo-container {
-display: flex;
-justify-content: center;
-align-items: center;
-margin-bottom: 12px;
-gap: 12px;
-flex-wrap: wrap;
-}
-.logo {
-width: 90px;
-height: 90px;
-background: url('img/logo.png') center/contain no-repeat;
-border-radius: 50%;
-}
-h1 {
-color: var(--black);
-font-size: 1.8rem;
-margin-bottom: 6px;
-font-weight: 700;
-}
-.subtitle {
-color: var(--gray);
-font-size: 1rem;
-margin-bottom: 10px;
-}
-/* Responsive Dashboard */
-.dashboard {
-display: flex;
-flex-direction: column;
-gap: 16px;
-margin-bottom: 20px;
-}
-@media (min-width: 768px) {
-.dashboard {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 20px;
-}
-}
-.card {
-background: var(--card-bg);
-border-radius: 14px;
-padding: 18px;
-box-shadow: var(--shadow);
-transition: transform 0.2s ease;
-position: relative;
-overflow: hidden;
-}
-.card::before {
-content: '';
-position: absolute;
-top: 0;
-left: 0;
-width: 4px;
-height: 100%;
-background: linear-gradient(to bottom, var(--primary), var(--secondary));
-}
-.card:hover {
-transform: translateY(-3px);
-}
-.card-title {
-font-size: 1.4rem;
-color: var(--black);
-margin-bottom: 16px;
-padding-bottom: 10px;
-display: flex;
-align-items: center;
-gap: 10px;
-font-weight: 700;
-}
-.card-title::after {
-content: '';
-flex: 1;
-height: 1.5px;
-background: linear-gradient(to right, var(--light-orange), transparent);
-margin-left: 10px;
-}
-.expense-card::before {
-background: linear-gradient(to bottom, var(--light-orange), var(--secondary));
-}
-.expense-card .card-title {
-color: var(--secondary);
-}
-.form-group {
-margin-bottom: 16px;
-}
-label {
-display: block;
-margin-bottom: 6px;
-font-weight: 600;
-color: var(--black);
-font-size: 0.95rem;
-}
-input, select, textarea {
-width: 100%;
-padding: 12px;
-border: 1.5px solid var(--light-orange);
-border-radius: 10px;
-font-size: 1rem;
-transition: all 0.3s ease;
-background-color: white;
-}
-input:focus, select:focus, textarea:focus {
-outline: none;
-border-color: var(--secondary);
-box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
-}
-.btn {
-display: block;
-width: 100%;
-padding: 14px;
-background: var(--primary);
-color: white;
-border: none;
-border-radius: 10px;
-font-size: 1.1rem;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.2s ease;
-text-align: center;
-box-shadow: 0 3px 6px rgba(255, 111, 0, 0.3);
-touch-action: manipulation;
-}
-.btn:hover {
-background: var(--secondary);
-transform: translateY(-2px);
-box-shadow: 0 4px 8px rgba(216, 67, 21, 0.4);
-}
-.btn-expense {
-background: linear-gradient(45deg, var(--light-orange), var(--secondary));
-}
-.btn-expense:hover {
-background: linear-gradient(45deg, var(--secondary), #BF360C);
-}
-/* Resumen */
-.results {
-background: linear-gradient(135deg, var(--primary), var(--secondary));
-color: white;
-border-radius: 14px;
-padding: 18px;
-}
-.expense-summary {
-background: linear-gradient(135deg, var(--light-orange), var(--secondary));
-color: white;
-border-radius: 14px;
-padding: 18px;
-margin-top: 16px;
-}
-.result-item {
-display: flex;
-justify-content: space-between;
-padding: 10px 0;
-border-bottom: 1px solid rgba(255,255,255,0.2);
-}
-.result-item:last-child {
-border-bottom: none;
-}
-.result-label {
-font-size: 0.95rem;
-font-weight: 600;
-}
-.result-value {
-font-size: 1.3rem;
-font-weight: 700;
-}
-.total {
-font-size: 1.6rem !important;
-color: var(--accent);
-}
-.neto-positivo { color: #4CAF50 !important; }
-.neto-negativo { color: #F44336 !important; }
-/* Tablas */
-.table-container {
-overflow-x: auto;
-border-radius: 10px;
-margin: 16px 0;
-}
-.sales-table, .expenses-table, .notes-table {
-width: 100%;
-border-collapse: collapse;
-min-width: 600px;
-}
-.sales-table th, .expenses-table th, .notes-table th {
-background: var(--light-orange);
-color: var(--black);
-text-align: left;
-padding: 12px 14px;
-font-weight: 600;
-font-size: 0.85rem;
-}
-.sales-table td, .expenses-table td, .notes-table td {
-padding: 12px 14px;
-font-size: 0.9rem;
-border-bottom: 1px solid var(--light-orange);
-}
-.actions {
-display: flex;
-gap: 6px;
-}
-.action-btn {
-padding: 6px 12px;
-border-radius: 6px;
-font-size: 0.75rem;
-cursor: pointer;
-border: none;
-font-weight: 600;
-}
-.edit-btn {
-background: var(--light-orange);
-color: var(--black);
-}
-.delete-btn {
-background: #EF5350;
-color: white;
-}
-.download-btn {
-background: #2196F3;
-color: white;
-}
-/* Footer */
-.footer {
-text-align: center;
-margin-top: 20px;
-padding: 16px;
-color: var(--gray);
-font-size: 0.85rem;
-border-top: 1px solid rgba(0,0,0,0.05);
-}
-/* Deudas */
-.debt-section {
-margin-top: 16px;
-padding: 16px;
-background: rgba(255, 243, 224, 0.5);
-border-radius: 10px;
-border-left: 3px solid var(--light-orange);
-}
-.debt-title {
-color: var(--secondary);
-font-weight: 600;
-margin-bottom: 12px;
-font-size: 1rem;
-}
-.debt-options {
-display: grid;
-grid-template-columns: 1fr;
-gap: 12px;
-}
-@media (min-width: 600px) {
-.debt-options {
-grid-template-columns: 1fr 1fr;
-}
-}
-/* PDF Template */
-.pdf-template {
-display: none;
-width: 100%;
-max-width: 800px;
-margin: 0 auto;
-background: white;
-padding: 40px;
-font-family: 'Arial', sans-serif;
-box-shadow: 0 0 20px rgba(0,0,0,0.1);
-}
-.pdf-header {
-text-align: center;
-margin-bottom: 30px;
-border-bottom: 3px solid var(--primary);
-padding-bottom: 20px;
-}
-.pdf-logo {
-width: 120px;
-height: 120px;
-background: url('img/logo.png') center/contain no-repeat;
-margin: 0 auto 15px;
-}
-.pdf-title {
-font-size: 28px;
-color: var(--black);
-margin-bottom: 10px;
-font-weight: bold;
-}
-.pdf-subtitle {
-color: var(--gray);
-font-size: 18px;
-}
-.pdf-info {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 20px;
-margin: 30px 0;
-}
-.info-item {
-margin-bottom: 15px;
-}
-.info-label {
-font-weight: bold;
-color: var(--black);
-}
-.info-value {
-color: var(--gray);
-}
-.pdf-table {
-width: 100%;
-border-collapse: collapse;
-margin: 30px 0;
-}
-.pdf-table th {
-background: var(--primary);
-color: white;
-text-align: left;
-padding: 12px;
-font-weight: bold;
-}
-.pdf-table.expense-table th {
-background: var(--light-orange);
-}
-.pdf-table td {
-padding: 12px;
-border: 1px solid var(--light-orange);
-color: var(--gray);
-}
-.pdf-total {
-text-align: right;
-font-size: 20px;
-font-weight: bold;
-margin-top: 20px;
-color: var(--primary);
-}
-.pdf-neto {
-text-align: right;
-font-size: 22px;
-font-weight: bold;
-margin-top: 15px;
-}
-/* Recibo Individual */
-.receipt-template {
-display: none;
-width: 100%;
-max-width: 600px;
-margin: 0 auto;
-background: white;
-padding: 30px;
-font-family: 'Arial', sans-serif;
-box-shadow: 0 0 20px rgba(0,0,0,0.1);
-}
-.receipt-header {
-text-align: center;
-margin-bottom: 20px;
-}
-.receipt-logo {
-width: 80px;
-height: 80px;
-background: url('img/logo.png') center/contain no-repeat;
-margin: 0 auto 10px;
-}
-.receipt-title {
-font-size: 22px;
-color: var(--black);
-font-weight: bold;
-margin-bottom: 5px;
-}
-.receipt-subtitle {
-color: var(--gray);
-font-size: 16px;
-margin-bottom: 15px;
-}
-.receipt-factura {
-font-size: 18px;
-font-weight: bold;
-color: var(--primary);
-margin-bottom: 15px;
-}
-.receipt-details {
-margin: 20px 0;
-}
-.receipt-detail {
-display: flex;
-justify-content: space-between;
-margin-bottom: 8px;
-}
-.receipt-total {
-text-align: right;
-font-size: 20px;
-font-weight: bold;
-margin-top: 15px;
-color: var(--primary);
-}
-.receipt-footer {
-margin-top: 25px;
-text-align: center;
-font-size: 14px;
-color: var(--gray);
-}
-/* Animations */
-@keyframes slideIn {
-from { transform: translateY(-20px) scale(0.95); opacity: 0; }
-to { transform: translateY(0) scale(1); opacity: 1; }
-}
-@keyframes pulse {
-0% { transform: scale(1); }
-50% { transform: scale(1.03); }
-100% { transform: scale(1); }
-}
-@keyframes shake {
-0%, 100% { transform: translateX(0); }
-25% { transform: translateX(-5px); }
-75% { transform: translateX(5px); }
-}
-.toolbar {
-position: fixed;
-bottom: 0;
-left: 0;
-width: 100%;
-background: white;
-padding: 12px 16px;
-box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-z-index: 1000;
-display: flex;
-justify-content: center;
-border-top: 1px solid var(--light-orange);
-}
-.tool-btn {
-display: flex;
-align-items: center;
-gap: 10px;
-background: linear-gradient(135deg, var(--primary), var(--secondary));
-color: white;
-text-decoration: none;
-padding: 12px 24px;
-border-radius: 14px;
-font-weight: 600;
-font-size: 1rem;
-transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-box-shadow: 0 4px 12px rgba(255, 111, 0, 0.3);
-transform: translateY(0);
-}
-.tool-btn:hover,
-.tool-btn:focus {
-transform: translateY(-3px);
-box-shadow: 0 6px 16px rgba(255, 111, 0, 0.45);
-outline: none;
-}
-.tool-icon {
-font-size: 1.2rem;
-}
-.tool-label {
-white-space: nowrap;
-}
-/* Responsive */
-@media (max-width: 480px) {
-.tool-btn {
-padding: 10px 18px;
-font-size: 0.95rem;
-}
-.notes-card textarea {
-min-height: 100px;
-}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#FF6F00" />
+  <title>Control Interno | Finca El Naranjo</title>
+  <link rel="icon" href="img/logo.png" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF6F00;
+      --secondary: #E65100;
+      --light-orange: #FFB74D;
+      --dark-orange: #D84315;
+      --white: #FFFFFF;
+      --gray: #616161;
+      --light-bg: #FFF8F0;
+      --medium-bg: #FFE0B2;
+      --dark-bg: #FFB300;
+      --share-bg: #f8f9fa;
+      --share-border: #e9ecef;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --border-color: rgba(0, 0, 0, 0.1);
+      --accent: #FFD700;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--light-bg) 0%, var(--medium-bg) 50%, var(--dark-bg) 100%);
+      min-height: 100vh;
+      padding: 12px;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Authentication Screen */
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .auth-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 40px;
+      width: 94%;
+      max-width: 480px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+    }
+    
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+    }
+    
+    .logo-container {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    
+    .logo {
+      width: 120px;
+      height: 120px;
+      background: url('img/logo.png') center/contain no-repeat;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      border: 3px solid var(--primary);
+      box-shadow: 0 8px 25px rgba(255, 111, 0, 0.3);
+    }
+    
+    .auth-title {
+      font-size: 2.2rem;
+      color: var(--black);
+      margin-bottom: 12px;
+      font-weight: 800;
+      text-align: center;
+      background: linear-gradient(45deg, var(--black), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .auth-subtitle {
+      color: var(--gray);
+      margin-bottom: 28px;
+      font-size: 1.1rem;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: var(--black);
+      font-size: 1.05rem;
+    }
+    
+    input {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid var(--light-orange);
+      border-radius: 14px;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      background-color: white;
+      font-weight: 500;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 4px rgba(230, 81, 0, 0.25);
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      box-shadow: 0 6px 15px rgba(255, 111, 0, 0.4);
+      touch-action: manipulation;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(216, 67, 21, 0.5);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .captcha-container {
+      background: var(--light-bg);
+      padding: 20px;
+      border-radius: 14px;
+      margin: 24px 0;
+      text-align: center;
+      border: 2px dashed var(--light-orange);
+    }
+    
+    .captcha-text {
+      font-size: 2.2rem;
+      font-weight: bold;
+      letter-spacing: 8px;
+      margin: 12px 0;
+      color: var(--black);
+      font-family: 'Courier New', monospace;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .captcha-input {
+      width: 100%;
+      padding: 14px;
+      text-align: center;
+      font-size: 1.3rem;
+      margin-top: 12px;
+      border-radius: 12px;
+      border: 2px solid var(--light-orange);
+    }
+    
+    /* Main Content */
+    #main-content {
+      display: none;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 20px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+    }
+    
+    nav {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      margin-bottom: 28px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+    }
+    
+    select, input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin: 0;
+      border: 2px solid var(--light-orange);
+      border-radius: 12px;
+      font-size: 1rem;
+      background: white;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    
+    select:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
+    }
+    
+    .btn-modern {
+      width: 100% !important;
+      padding: 14px 20px !important;
+      font-size: 1.05rem !important;
+      border-radius: 12px !important;
+      background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+      color: white !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      border: none !important;
+      box-shadow: 0 4px 12px rgba(255, 111, 0, 0.35) !important;
+      transition: all 0.3s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px !important;
+    }
+    
+    .btn-modern:hover {
+      transform: translateY(-3px) !important;
+      box-shadow: 0 6px 16px rgba(216, 67, 21, 0.45) !important;
+    }
+    
+    .results {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      margin-top: 16px;
+      max-height: 500px;
+      overflow-y: auto;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+    
+    th, td {
+      padding: 14px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    
+    th {
+      background: linear-gradient(135deg, var(--light-orange), var(--primary));
+      color: white;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 28px;
+      padding: 16px;
+      color: var(--gray);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    
+    #receipt-template {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      font-family: Arial, sans-serif;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .receipt-qr-container {
+      text-align: center;
+      margin-top: 24px;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateY(-20px) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    
+    .notification {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 16px 28px;
+      border-radius: 14px;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      z-index: 10000;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      animation: fadeIn 0.3s, fadeOut 0.3s 2.7s forwards;
+    }
+    
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+    
+    .error { 
+      background: linear-gradient(135deg, #f44336, #d32f2f); 
+    }
+    
+    .success { 
+      background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+    }
+    
+    /* Dashboard Styles */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    }
+    
+    .stat-info h3 {
+      font-size: 1rem;
+      color: var(--gray);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .stat-info p {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--black);
+      background: linear-gradient(45deg, var(--black), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: white;
+      box-shadow: 0 6px 15px rgba(255, 111, 0, 0.4);
+    }
+    
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      color: var(--black);
+      text-align: center;
+      background: linear-gradient(45deg, var(--black), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .analytics-container {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+      margin-bottom: 28px;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+    }
+    
+    .chart-placeholder {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 16px;
+      margin-top: 16px;
+      color: var(--gray);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .chart-placeholder i {
+      font-size: 3rem;
+      margin-right: 16px;
+      color: var(--primary);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .auth-card {
+        padding: 24px;
+      }
+      
+      .auth-title {
+        font-size: 1.8rem;
+      }
+      
+      .logo {
+        width: 90px;
+        height: 90px;
+      }
+      
+      nav {
+        grid-template-columns: 1fr;
+      }
+      
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-<!-- PIN Authentication -->
-<div class="page-loader" id="pin-screen">
-<div class="pin-container">
-<div class="pin-logo"></div>
-<h2 class="pin-title">Finca El Naranjo</h2>
-<p class="pin-subtitle">Ingrese su PIN para acceder</p>
-<input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="" autocomplete="off">
-<div class="pin-pad">
-<button class="pin-btn" data-value="1">1</button>
-<button class="pin-btn" data-value="2">2</button>
-<button class="pin-btn" data-value="3">3</button>
-<button class="pin-btn" data-value="4">4</button>
-<button class="pin-btn" data-value="5">5</button>
-<button class="pin-btn" data-value="6">6</button>
-<button class="pin-btn" data-value="7">7</button>
-<button class="pin-btn" data-value="8">8</button>
-<button class="pin-btn" data-value="9">9</button>
-<button class="pin-btn clear" data-action="clear">C</button>
-<button class="pin-btn" data-value="0">0</button>
-<button class="pin-btn enter" data-action="enter">✓</button>
-</div>
-</div>
-</div>
-<!-- Main Content -->
-<div class="container" id="main-content" style="display: none; opacity: 0;">
-<header>
-<div class="logo-container">
-<div class="logo"></div>
-<div>
-<h1>Finca El Naranjo</h1>
-<p class="subtitle">Registro de Ventas y Gastos</p>
-</div>
-</div>
-<div class="toolbar">
-<a href="control1.html" class="tool-btn">
-<span class="tool-icon">↗️</span>
-<span class="tool-label">CONTROL INTERNO</span>
-</a>
-</div>
-</header>
-<div class="dashboard">
-<div class="card">
-<h2 class="card-title">📝 Nueva Venta</h2>
-<div class="form-group">
-<label for="cliente">Cliente</label>
-<input type="text" id="cliente" placeholder="Nombre del cliente">
-</div>
-<div class="form-group">
-<label for="factura">N° Factura</label>
-<input type="text" id="factura" placeholder="F-0001">
-</div>
-<div class="form-group">
-<label for="cubetas">Cubetas</label>
-<input type="number" id="cubetas" min="1" value="1">
-</div>
-<div class="form-group">
-<label for="precio">Precio por cubeta ($)</label>
-<input type="number" id="precio" min="1" value="5000">
-</div>
-<div class="form-group">
-<label for="fecha-venta">Fecha y Hora</label>
-<input type="datetime-local" id="fecha-venta">
-</div>
-<div class="debt-section">
-<h3 class="debt-title">💰 Crédito (opcional)</h3>
-<div class="debt-options">
-<div class="form-group">
-<label for="cubetas-debe">Cubetas a crédito</label>
-<input type="number" id="cubetas-debe" min="0" value="0">
-</div>
-<div class="form-group">
-<label for="monto-debe">Monto a crédito ($)</label>
-<input type="number" id="monto-debe" min="0" value="0">
-</div>
-</div>
-</div>
-<button class="btn" id="agregar-venta">➕ Agregar Venta</button>
-</div>
-<div class="card expense-card">
-<h2 class="card-title">📦 Nuevo Gasto</h2>
-<div class="form-group">
-<label for="tipo-gasto">Tipo</label>
-<select id="tipo-gasto">
-<option value="purina">Bulto de Purina</option>
-<option value="medicamento">Medicamentos</option>
-<option value="transporte">Transporte</option>
-<option value="mantenimiento">Mantenimiento</option>
-<option value="otros">Otros</option>
-</select>
-</div>
-<div class="form-group">
-<label for="descripcion-gasto">Descripción</label>
-<textarea id="descripcion-gasto" rows="2" placeholder="Detalles"></textarea>
-</div>
-<div class="form-group">
-<label for="monto-gasto">Monto ($)</label>
-<input type="number" id="monto-gasto" min="1" value="50000">
-</div>
-<div class="form-group">
-<label for="fecha-gasto">Fecha y Hora</label>
-<input type="datetime-local" id="fecha-gasto">
-</div>
-<button class="btn btn-expense" id="agregar-gasto">➕ Registrar Gasto</button>
-</div>
-<div class="card notes-card">
-<h2 class="card-title">📓 Blog de Notas</h2>
-<div class="form-group">
-<label for="nota-texto">Contenido de la nota</label>
-<textarea id="nota-texto" placeholder="Escribe tu nota aquí..." rows="3"></textarea>
-</div>
-<button class="btn" id="guardar-nota">💾 Guardar Nota</button>
-<div class="table-container" style="margin-top: 16px;">
-<table class="notes-table">
-<thead>
-<tr>
-<th>Nota</th>
-<th>Fecha</th>
-<th>Acciones</th>
-</tr>
-</thead>
-<tbody id="notas-lista">
-<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--gray)">Sin notas</td></tr>
-</tbody>
-</table>
-</div>
-<button class="btn" id="descargar-notas" style="margin-top: 16px;">📥 Descargar Notas (PDF)</button>
-</div>
-<div class="card">
-<h2 class="card-title">📊 Resumen Financiero</h2>
-<div class="results">
-<div class="result-item">
-<span class="result-label">Ventas</span>
-<span class="result-value" id="total-ventas">0</span>
-</div>
-<div class="result-item">
-<span class="result-label">Ingresos ($)</span>
-<span class="result-value total" id="total-ingresos">0</span>
-</div>
-<div class="result-item">
-<span class="result-label">Créditos</span>
-<span class="result-value" id="total-debe" style="color: var(--light-orange);">0</span>
-</div>
-</div>
-<div class="expense-summary">
-<div class="result-item">
-<span class="result-label">Gastos</span>
-<span class="result-value" id="total-gastos-count">0</span>
-</div>
-<div class="result-item">
-<span class="result-label">Total Gastos ($)</span>
-<span class="result-value total" id="total-gastos">0</span>
-</div>
-<div class="result-item">
-<span class="result-label">Balance Neto ($)</span>
-<span class="result-value total neto-positivo" id="balance-neto">0</span>
-</div>
-</div>
-<button class="btn" id="generar-pdf" style="margin-top: 16px;">📄 Generar Reporte PDF</button>
-</div>
-</div>
-<div class="card">
-<h2 class="card-title">📋 Ventas Registradas</h2>
-<div class="table-container">
-<table class="sales-table">
-<thead>
-<tr>
-<th>Factura</th>
-<th>Cliente</th>
-<th>Cubetas</th>
-<th>Precio</th>
-<th>Total</th>
-<th>Debe</th>
-<th>Fecha y Hora</th>
-<th>Acciones</th>
-</tr>
-</thead>
-<tbody id="ventas-lista">
-<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--gray)">Sin ventas</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="card">
-<h2 class="card-title">🧾 Gastos Registrados</h2>
-<div class="table-container">
-<table class="expenses-table">
-<thead>
-<tr>
-<th>Tipo</th>
-<th>Descripción</th>
-<th>Monto</th>
-<th>Fecha y Hora</th>
-<th>Acciones</th>
-</tr>
-</thead>
-<tbody id="gastos-lista">
-<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray)">Sin gastos</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="footer">
-<p>Finca El Naranjo &copy; 2026 | Sistema Integral</p>
-<p style="margin-top:4px;font-size:0.8rem">Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
-</div>
-</div>
-<!-- PDF Template -->
-<div id="pdf-template" class="pdf-template">
-<div class="pdf-header">
-<div class="pdf-logo"></div>
-<h2 class="pdf-title">Reporte Financiero Completo</h2>
-<p class="pdf-subtitle">Finca El Naranjo - Ventas y Gastos</p>
-</div>
-<div class="pdf-info">
-<div>
-<div class="info-item"><span class="info-label">Fecha del Reporte:</span><span class="info-value" id="pdf-report-date">-</span></div>
-<div class="info-item"><span class="info-label">Total Ventas:</span><span class="info-value" id="pdf-ventas-count">-</span></div>
-<div class="info-item"><span class="info-label">Total Gastos:</span><span class="info-value" id="pdf-gastos-count">-</span></div>
-</div>
-<div>
-<div class="info-item"><span class="info-label">Total Ingresos:</span><span class="info-value" id="pdf-ingresos">-</span></div>
-<div class="info-item"><span class="info-label">Total Gastos:</span><span class="info-value" id="pdf-gastos">-</span></div>
-<div class="info-item"><span class="info-label">Balance Neto:</span><span class="info-value" id="pdf-neto">-</span></div>
-</div>
-</div>
-<h3 style="margin:25px 0 15px;color:var(--black);font-size:18px;">Ventas Registradas</h3>
-<table class="pdf-table">
-<thead><tr><th>Factura</th><th>Cliente</th><th>Cubetas</th><th>P. Unitario</th><th>Total</th><th>Debe</th><th>Fecha y Hora</th></tr></thead>
-<tbody id="pdf-sales-table"><tr><td colspan="7" style="text-align:center">No hay ventas</td></tr></tbody>
-</table>
-<h3 style="margin:25px 0 15px;color:var(--light-orange);font-size:18px;">Gastos Registrados</h3>
-<table class="pdf-table expense-table">
-<thead><tr><th>Tipo</th><th>Descripción</th><th>Monto</th><th>Fecha y Hora</th></tr></thead>
-<tbody id="pdf-expenses-table"><tr><td colspan="4" style="text-align:center">No hay gastos</td></tr></tbody>
-</table>
-<div class="pdf-total">TOTAL INGRESOS: <span id="pdf-total-ingresos">-</span></div>
-<div class="pdf-total">TOTAL GASTOS: <span id="pdf-total-gastos" style="color:var(--light-orange)">-</span></div>
-<div class="pdf-neto">BALANCE NETO: <span id="pdf-balance-neto">-</span></div>
-<div style="margin-top:40px;text-align:center">
-<p style="color:var(--black);font-weight:bold">¡Gracias por su confianza!</p>
-<p>Control total de su negocio agropecuario</p>
-<p style="margin-top:10px;font-size:14px;color:#666">Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
-<div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; text-align: center;">
-<p style="font-size: 10px; color: #999; font-style: italic;">Reporte generado a partir de los registros de gestión.</p>
-</div>
-</div>
-</div>
-<!-- Recibo Individual Template -->
-<div id="receipt-template" class="receipt-template">
-<div class="receipt-header">
-<div class="receipt-logo"></div>
-<h2 class="receipt-title">RECIBO DE VENTA</h2>
-<p class="receipt-subtitle">Finca El Naranjo</p>
-<div class="receipt-factura" id="receipt-factura">F-0001</div>
-</div>
-<div class="receipt-details" id="receipt-details">
-<!-- Detalles dinámicos -->
-</div>
-<div class="receipt-total" id="receipt-total">$0</div>
-<div id="receipt-qr-container" style="margin:12px 0;"></div>
-<div style="margin-top:12px;font-size:9px;color:#666;text-align:center;line-height:1.3;">
-Este recibo es un comprobante de control interno y no constituye<br>
-una factura de venta ni documento equivalente según el Estatuto Tributario.
-</div>
-<div id="receipt-payment-info" class="receipt-footer" style="margin-top:16px;display:none;">
-<p style="font-size: 10px; color: #999; font-style: italic;">Para realizar el pago de su compra, puede hacerlo</p>
-<p style="font-size: 10px; color: #999; font-style: italic;">por transferencia vía Nequi al número:</p>
-<p style="font-size: 10px; color: #999; font-style: italic;">314 4361405</p>
-<p>Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
-<p>Gracias por su compra</p>
-</div>
-<div class="receipt-footer" style="margin-top:12px;">
-<div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; text-align: center;">
-<p style="font-size: 10px; color: #999; font-style: italic;">Comprobante generado a partir de los registros de gestión.</p>
-</div>
-</div>
-</div>
-<!-- IndexedDB Helper -->
-<script>
-// Corregir jsPDF
-const { jsPDF } = window.jspdf;
+  <!-- Pantalla de Autenticación -->
+  <div class="auth-container" id="auth-screen">
+    <div class="auth-card">
+      <div class="logo-container">
+        <div class="logo"></div>
+        <h2 class="auth-title">Control Interno</h2>
+        <p class="auth-subtitle">Finca El Naranjo - Sistema de Gestión Avanzado</p>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Contraseña de Acceso</label>
+        <input type="password" id="password" placeholder="Ingrese su contraseña segura">
+      </div>
+      
+      <div class="captcha-container">
+        <p><i class="fas fa-shield-alt"></i> Verificación de seguridad</p>
+        <div class="captcha-text" id="captcha-text">AB3X9</div>
+        <input type="text" id="captcha-input" class="captcha-input" placeholder="Ingrese los caracteres mostrados">
+      </div>
+      
+      <button class="btn" id="login-btn">
+        <i class="fas fa-lock"></i> Acceder al Sistema
+      </button>
+    </div>
+  </div>
 
-class DBManager {
-constructor() {
-this.db = null;
-this.init();
-}
-init() {
-return new Promise((resolve, reject) => {
-const req = indexedDB.open('FincaElNaranjoDB', 3);
-req.onerror = () => reject(req.error);
-req.onsuccess = () => {
-this.db = req.result;
-resolve(this.db);
-};
-req.onupgradeneeded = (e) => {
-const db = e.target.result;
-if (!db.objectStoreNames.contains('ventas')) {
-db.createObjectStore('ventas', { keyPath: 'id' });
-}
-if (!db.objectStoreNames.contains('gastos')) {
-db.createObjectStore('gastos', { keyPath: 'id' });
-}
-if (!db.objectStoreNames.contains('notas')) {
-db.createObjectStore('notas', { keyPath: 'id' });
-}
-if (!db.objectStoreNames.contains('metadata')) {
-const metaStore = db.createObjectStore('metadata', { keyPath: 'key' });
-metaStore.put({ key: 'nextFacturaNumber', value: 1 });
-}
-};
-});
-}
-async getNextFacturaNumber() {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['metadata'], 'readonly');
-const store = tx.objectStore('metadata');
-const req = store.get('nextFacturaNumber');
-req.onsuccess = () => {
-const nextNum = req.result ? req.result.value : 1;
-resolve(nextNum);
-};
-req.onerror = () => reject(req.error);
-});
-}
-async updateNextFacturaNumber(nextNum) {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['metadata'], 'readwrite');
-const store = tx.objectStore('metadata');
-const req = store.put({ key: 'nextFacturaNumber', value: nextNum });
-req.onsuccess = () => resolve();
-req.onerror = () => reject(req.error);
-});
-}
-async saveVenta(venta) {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['ventas'], 'readwrite');
-const store = tx.objectStore('ventas');
-venta.fechaRegistro = new Date().toISOString();
-const req = store.put(venta);
-req.onsuccess = () => resolve(venta.id);
-req.onerror = () => reject(req.error);
-});
-}
-async saveGasto(gasto) {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['gastos'], 'readwrite');
-const store = tx.objectStore('gastos');
-gasto.fechaRegistro = new Date().toISOString();
-const req = store.put(gasto);
-req.onsuccess = () => resolve(gasto.id);
-req.onerror = () => reject(req.error);
-});
-}
-async saveNota(nota) {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['notas'], 'readwrite');
-const store = tx.objectStore('notas');
-nota.fechaRegistro = new Date().toISOString();
-const req = store.put(nota);
-req.onsuccess = () => resolve(nota.id);
-req.onerror = () => reject(req.error);
-});
-}
-async getAllVentas() {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['ventas'], 'readonly');
-const store = tx.objectStore('ventas');
-const req = store.getAll();
-req.onsuccess = () => resolve(req.result);
-req.onerror = () => reject(req.error);
-});
-}
-async getAllGastos() {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['gastos'], 'readonly');
-const store = tx.objectStore('gastos');
-const req = store.getAll();
-req.onsuccess = () => resolve(req.result);
-req.onerror = () => reject(req.error);
-});
-}
-async getAllNotas() {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['notas'], 'readonly');
-const store = tx.objectStore('notas');
-const req = store.getAll();
-req.onsuccess = () => resolve(req.result);
-req.onerror = () => reject(req.error);
-});
-}
-async deleteVenta(id) {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['ventas'], 'readwrite');
-const store = tx.objectStore('ventas');
-const req = store.delete(id);
-req.onsuccess = () => resolve();
-req.onerror = () => reject(req.error);
-});
-}
-async deleteGasto(id) {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['gastos'], 'readwrite');
-const store = tx.objectStore('gastos');
-const req = store.delete(id);
-req.onsuccess = () => resolve();
-req.onerror = () => reject(req.error);
-});
-}
-async deleteNota(id) {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['notas'], 'readwrite');
-const store = tx.objectStore('notas');
-const req = store.delete(id);
-req.onsuccess = () => resolve();
-req.onerror = () => reject(req.error);
-});
-}
-async updateNota(id, texto) {
-await this.init();
-return new Promise((resolve, reject) => {
-const tx = this.db.transaction(['notas'], 'readwrite');
-const store = tx.objectStore('notas');
-const req = store.get(id);
-req.onsuccess = () => {
-const nota = req.result;
-if (nota) {
-nota.texto = texto;
-nota.fechaActualizacion = new Date().toISOString();
-store.put(nota);
-resolve();
-} else {
-reject(new Error('Nota no encontrada'));
-}
-};
-req.onerror = () => reject(req.error);
-});
-}
-}
-const db = new DBManager();
-</script>
-<script>
-function generateQR(text, size = 80) {
-const encoded = encodeURIComponent(text);
-return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}`;
-}
+  <!-- Contenido Principal -->
+  <div class="container" id="main-content">
+    <header>
+      <div class="logo-container">
+        <div class="logo"></div>
+        <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--black); margin: 12px 0;">Control Interno</h1>
+        <p class="subtitle" style="font-size: 1.2rem; color: var(--gray);">Finca El Naranjo – Suaita, Santander</p>
+      </div>
+    </header>
 
-class BusinessManager {
-constructor() {
-this.ventas = [];
-this.gastos = [];
-this.notas = [];
-this.currentEditSale = undefined;
-this.currentEditExpense = undefined;
-this.currentEditNote = undefined;
-this.nextFacturaNumber = 1;
-this.lastGeneratedReceipt = null;
-this.init();
-}
-init() {
-this.loadData();
-this.setTodayDates();
-this.loadNextFacturaNumber();
-}
-setTodayDates() {
-const now = new Date();
-const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-document.getElementById('fecha-venta').value = local.toISOString().slice(0, 16);
-document.getElementById('fecha-gasto').value = local.toISOString().slice(0, 16);
-}
-formatDateTime(dateStr) {
-const d = new Date(dateStr);
-return d.toLocaleString('es-CO', {
-day: '2-digit',
-month: '2-digit',
-year: 'numeric',
-hour: '2-digit',
-minute: '2-digit',
-hour12: false
-}).replace(',', '');
-}
-sortChronological(arr) {
-return [...arr].sort((a, b) => new Date(a.fechaCompleta || a.fechaRegistro) - new Date(b.fechaCompleta || b.fechaRegistro));
-}
-async loadNextFacturaNumber() {
-try {
-this.nextFacturaNumber = await db.getNextFacturaNumber();
-this.updateFacturaInput();
-} catch (e) {
-console.error('Error cargando número de factura:', e);
-}
-}
-updateFacturaInput() {
-document.getElementById('factura').value = `F-${String(this.nextFacturaNumber).padStart(4, '0')}`;
-}
-async loadData() {
-try {
-this.ventas = await db.getAllVentas();
-this.gastos = await db.getAllGastos();
-this.notas = await db.getAllNotas();
-this.updateSummary();
-this.renderAll();
-this.renderNotes();
-} catch (e) {
-console.error('Error cargando datos:', e);
-}
-}
-// === NOTAS ===
-addNote(texto) {
-if (!texto.trim()) return this.notify('La nota no puede estar vacía', 'error');
-db.saveNota({
-id: Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-texto: texto.trim(),
-fechaRegistro: new Date().toISOString()
-}).then(() => {
-this.loadData();
-this.notify('Nota guardada ✔️');
-document.getElementById('nota-texto').value = '';
-}).catch(err => {
-console.error('Error guardando nota:', err);
-this.notify('Error al guardar nota', 'error');
-});
-}
-updateNote(noteId, texto) {
-if (!texto.trim()) return this.notify('La nota no puede estar vacía', 'error');
-db.updateNota(noteId, texto.trim()).then(() => {
-this.loadData();
-this.notify('Nota actualizada ✔️');
-}).catch(err => {
-console.error('Error actualizando nota:', err);
-this.notify('Error al actualizar nota', 'error');
-});
-}
-deleteNote(noteId) {
-db.deleteNota(noteId).then(() => {
-this.loadData();
-this.notify('Nota eliminada');
-}).catch(err => {
-console.error('Error eliminando nota:', err);
-this.notify('Error al eliminar nota', 'error');
-});
-}
-renderNotes() {
-const list = document.getElementById('notas-lista');
-if (this.notas.length === 0) {
-list.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--gray)">Sin notas</td></tr>`;
-return;
-}
-const sorted = this.sortChronological(this.notas);
-list.innerHTML = sorted.map(n => `
-<tr>
-<td style="max-width:300px;word-break:break-word;">${n.texto}</td>
-<td>${this.formatDateTime(n.fechaRegistro)}</td>
-<td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editNote('${n.id}', \`${n.texto.replace(/`/g, '\\`')}\`)">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteNote('${n.id}')">🗑️</button>
-</td>
-</tr>
-`).join('');
-}
-editNote(noteId, texto) {
-document.getElementById('nota-texto').value = texto;
-this.currentEditNote = noteId;
-document.getElementById('guardar-nota').textContent = '✏️ Actualizar Nota';
-}
-saveNote() {
-const texto = document.getElementById('nota-texto').value.trim();
-if (this.currentEditNote) {
-this.updateNote(this.currentEditNote, texto);
-this.currentEditNote = undefined;
-document.getElementById('guardar-nota').textContent = '💾 Guardar Nota';
-} else {
-this.addNote(texto);
-}
-}
-downloadAllNotes() {
-if (this.notas.length === 0) return this.notify('No hay notas para descargar', 'error');
-const doc = new jsPDF();
-let y = 20;
-doc.setFontSize(16);
-doc.text('Blog de Notas - Finca El Naranjo', 10, y);
-y += 15;
-doc.setFontSize(12);
-this.notas.forEach(note => {
-if (y > 280) {
-doc.addPage();
-y = 20;
-}
-doc.text(`${new Date(note.fechaRegistro).toLocaleString('es-CO')}:`, 10, y);
-y += 8;
-doc.text(note.texto, 10, y);
-y += 12;
-});
-doc.save('blog-de-notas.pdf');
-this.notify('Notas descargadas ✔️');
-}
-// === VENTAS Y GASTOS ===
-addSale(data) {
-let factura = data.factura || `F-${String(this.nextFacturaNumber).padStart(4, '0')}`;
-db.saveVenta({
-id: Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-cliente: data.cliente.trim(),
-cubetas: data.cubetas,
-precio: data.precio,
-total: data.total,
-debe: data.debe || 0,
-fechaCompleta: data.fechaCompleta,
-factura: factura
-}).then(() => {
-if (!data.factura) {
-this.nextFacturaNumber++;
-db.updateNextFacturaNumber(this.nextFacturaNumber);
-}
-this.loadData();
-this.updateFacturaInput();
-this.notify('Venta guardada ✔️');
-}).catch(err => {
-console.error('Error guardando venta:', err);
-this.notify('Error al guardar venta', 'error');
-});
-}
-updateSale(index, data) {
-const v = this.ventas[index];
-if (!v) return;
-db.saveVenta({
-...v,
-cliente: data.cliente.trim(),
-cubetas: data.cubetas,
-precio: data.precio,
-total: data.total,
-debe: data.debe || 0,
-fechaCompleta: data.fechaCompleta,
-factura: data.factura || v.factura
-}).then(() => {
-this.loadData();
-this.notify('Venta actualizada ✔️');
-}).catch(err => {
-console.error('Error actualizando venta:', err);
-this.notify('Error al actualizar', 'error');
-});
-}
-deleteSale(index) {
-const v = this.ventas[index];
-if (!v) return;
-db.deleteVenta(v.id).then(() => {
-this.loadData();
-this.notify('Venta eliminada');
-}).catch(err => {
-console.error('Error eliminando venta:', err);
-this.notify('Error al eliminar', 'error');
-});
-}
-addExpense(data) {
-db.saveGasto({
-id: Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-tipo: data.tipo,
-descripcion: data.descripcion.trim(),
-monto: data.monto,
-fechaCompleta: data.fechaCompleta
-}).then(() => {
-this.loadData();
-this.notify('Gasto guardado ✔️', 'expense');
-}).catch(err => {
-console.error('Error guardando gasto:', err);
-this.notify('Error al guardar gasto', 'error');
-});
-}
-updateExpense(index, data) {
-const g = this.gastos[index];
-if (!g) return;
-db.saveGasto({
-...g,
-tipo: data.tipo,
-descripcion: data.descripcion.trim(),
-monto: data.monto,
-fechaCompleta: data.fechaCompleta
-}).then(() => {
-this.loadData();
-this.notify('Gasto actualizado ✔️', 'expense');
-}).catch(err => {
-console.error('Error actualizando gasto:', err);
-this.notify('Error al actualizar', 'error');
-});
-}
-deleteExpense(index) {
-const g = this.gastos[index];
-if (!g) return;
-db.deleteGasto(g.id).then(() => {
-this.loadData();
-this.notify('Gasto eliminado', 'expense');
-}).catch(err => {
-console.error('Error eliminando gasto:', err);
-this.notify('Error al eliminar', 'error');
-});
-}
-updateSummary() {
-const ingr = this.ventas.reduce((s, v) => s + v.total, 0);
-const gast = this.gastos.reduce((s, g) => s + g.monto, 0);
-const debe = this.ventas.reduce((s, v) => s + (v.debe || 0), 0);
-const neto = ingr - gast;
-const update = (id, value) => {
-const el = document.getElementById(id);
-if (el) el.textContent = value;
-};
-update('total-ventas', this.ventas.length);
-update('total-ingresos', ingr.toLocaleString('es-CO'));
-update('total-debe', debe.toLocaleString('es-CO'));
-update('total-gastos-count', this.gastos.length);
-update('total-gastos', gast.toLocaleString('es-CO'));
-update('balance-neto', neto.toLocaleString('es-CO'));
-const netoEl = document.getElementById('balance-neto');
-if (netoEl) netoEl.className = `result-value total ${neto >= 0 ? 'neto-positivo' : 'neto-negativo'}`;
-}
-renderSales() {
-const list = document.getElementById('ventas-lista');
-if (this.ventas.length === 0) {
-list.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--gray)">Sin ventas</td></tr>`;
-return;
-}
-const sorted = this.sortChronological(this.ventas);
-list.innerHTML = sorted.map((v, i) => `
-<tr>
-<td>${v.factura}</td>
-<td>${v.cliente}</td>
-<td>${v.cubetas}</td>
-<td>$${v.precio.toLocaleString('es-CO')}</td>
-<td>$${v.total.toLocaleString('es-CO')}</td>
-<td style="color:${v.debe > 0 ? 'var(--light-orange)' : 'var(--primary)'}">$${(v.debe || 0).toLocaleString('es-CO')}</td>
-<td>${this.formatDateTime(v.fechaCompleta)}</td>
-<td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editSale(${this.ventas.indexOf(v)})">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteSale(${this.ventas.indexOf(v)})">🗑️</button>
-<button class="action-btn download-btn" onclick="businessManager.downloadReceipt('${v.id}')">📥</button>
-</td>
-</tr>
-`).join('');
-}
-renderExpenses() {
-const list = document.getElementById('gastos-lista');
-if (this.gastos.length === 0) {
-list.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray)">Sin gastos</td></tr>`;
-return;
-}
-const sorted = this.sortChronological(this.gastos);
-const tipoLabels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', otros: 'Otros' };
-list.innerHTML = sorted.map((g, i) => `
-<tr>
-<td>${tipoLabels[g.tipo] || g.tipo}</td>
-<td>${g.descripcion || '-'}</td>
-<td style="color:var(--secondary);font-weight:bold">$${g.monto.toLocaleString('es-CO')}</td>
-<td>${this.formatDateTime(g.fechaCompleta)}</td>
-<td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editExpense(${this.gastos.indexOf(g)})">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteExpense(${this.gastos.indexOf(g)})">🗑️</button>
-<button class="action-btn download-btn" onclick="businessManager.downloadExpenseReceipt('${g.id}')">📥</button>
-</td>
-</tr>
-`).join('');
-}
-renderAll() {
-this.renderSales();
-this.renderExpenses();
-this.updateSummary();
-}
-notify(msg, type = 'success') {
-const n = document.createElement('div');
-n.innerHTML = `<div style="padding:12px 16px;border-radius:10px;color:white;font-weight:600;background:${type==='error'?'#f44336':'var(--primary)'};box-shadow:0 4px 12px rgba(0,0,0,0.2);position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:10000;">${msg}</div>`;
-document.body.appendChild(n);
-setTimeout(() => {
-n.style.opacity = '0';
-n.style.transition = 'opacity 0.5s';
-setTimeout(() => n.remove(), 500);
-}, 2500);
-}
-// === RECEIPTS Y REPORTES ===
-downloadReceipt(saleId) {
-const sale = this.ventas.find(v => v.id === saleId);
-if (!sale) return;
-const receiptTemplate = document.getElementById('receipt-template');
-const receiptDetails = document.getElementById('receipt-details');
-const receiptFactura = document.getElementById('receipt-factura');
-const receiptTotal = document.getElementById('receipt-total');
-const qrContainer = document.getElementById('receipt-qr-container');
-const paymentInfo = document.getElementById('receipt-payment-info');
+    <!-- Dashboard Section -->
+    <div class="analytics-container">
+      <h2 class="section-title">Dashboard Analítico</h2>
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Ventas Totales</h3>
+            <p id="dashboard-ventas">$0</p>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Gastos</h3>
+            <p id="dashboard-gastos">$0</p>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Balance Neto</h3>
+            <p id="dashboard-neto">$0</p>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-balance-scale"></i>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Créditos</h3>
+            <p id="dashboard-debe">$0</p>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-hand-holding-usd"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chart-placeholder">
+        <i class="fas fa-chart-line"></i>
+        Gráfico de análisis de ventas y tendencias (implementación futura)
+      </div>
+    </div>
 
-receiptFactura.textContent = sale.factura;
-receiptTotal.textContent = `$${sale.total.toLocaleString('es-CO')}`;
-let detailsHTML = `
-<div class="receipt-detail"><span>Cliente:</span><span>${sale.cliente}</span></div>
-<div class="receipt-detail"><span>Cubetas:</span><span>${sale.cubetas}</span></div>
-<div class="receipt-detail"><span>Precio unitario:</span><span>$${sale.precio.toLocaleString('es-CO')}</span></div>
-`;
-if (sale.debe && sale.debe > 0) {
-detailsHTML += `<div class="receipt-detail"><span>Crédito:</span><span>$${sale.debe.toLocaleString('es-CO')}</span></div>`;
-}
-detailsHTML += `<div class="receipt-detail"><span>Fecha:</span><span>${this.formatDateTime(sale.fechaCompleta)}</span></div>`;
-receiptDetails.innerHTML = detailsHTML;
-paymentInfo.style.display = 'block';
+    <nav>
+      <button class="btn-modern" onclick="goToMain()">
+        <i class="fas fa-arrow-left"></i> Volver al Registro Principal
+      </button>
+      <select id="mes-select">
+        <option value="">Seleccione un mes</option>
+        <option value="0">Enero</option>
+        <option value="1">Febrero</option>
+        <option value="2">Marzo</option>
+        <option value="3">Abril</option>
+        <option value="4">Mayo</option>
+        <option value="5">Junio</option>
+        <option value="6">Julio</option>
+        <option value="7">Agosto</option>
+        <option value="8">Septiembre</option>
+        <option value="9">Octubre</option>
+        <option value="10">Noviembre</option>
+        <option value="11">Diciembre</option>
+      </select>
+      <button class="btn-modern" onclick="descargarExtractoVentas()">
+        <i class="fas fa-file-download"></i> Extracto Mensual de Ventas
+      </button>
+      <button class="btn-modern" onclick="descargarExtractoGastos()">
+        <i class="fas fa-file-invoice-dollar"></i> Extracto Mensual de Gastos
+      </button>
+      <button class="btn-modern" onclick="clientesTop()">
+        <i class="fas fa-crown"></i> Clientes con +4 Ventas
+      </button>
+      <input type="text" id="cliente-input" placeholder="Nombre del cliente" />
+      <button class="btn-modern" onclick="ventasPorCliente()">
+        <i class="fas fa-search"></i> Ventas por Cliente
+      </button>
+    </nav>
 
-const qrText = `${sale.factura}\n${sale.cliente}\n$${sale.total.toLocaleString('es-CO')}\n${this.formatDateTime(sale.fechaCompleta)}`;
-const qrUrl = generateQR(qrText, 80);
-qrContainer.innerHTML = `<img src="${qrUrl}" alt="QR" style="width:80px;height:80px;display:block;margin-left:0;margin-right:auto;">`;
+    <div class="results" id="resultados"></div>
 
-receiptTemplate.style.display = 'block';
+    <footer>
+      <p>Finca El Naranjo &copy; 2026 | Sistema de Control Interno Seguro</p>
+      <p style="margin-top:4px;font-size:0.85rem">Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
+    </footer>
+  </div>
 
-// Esperar a que las imágenes se carguen
-setTimeout(() => {
-html2canvas(receiptTemplate, {
-scale: 2,
-useCORS: true,
-allowTaint: true
-}).then(canvas => {
-const imgData = canvas.toDataURL('image/png');
-const pdf = new jsPDF('p', 'mm', 'a4');
-const imgWidth = 210;
-const pageHeight = 297;
-const imgHeight = (canvas.height * imgWidth) / canvas.width;
-let heightLeft = imgHeight;
-let position = 0;
+  <!-- Recibo para PDF -->
+  <div id="receipt-template">
+    <div style="text-align:center;">
+      <div style="width:80px;height:80px;background:url('img/logo.png');background-size:contain;background-position:center;margin:0 auto 10px;"></div>
+      <h2 style="color:#000;font-weight:bold;" id="receipt-title">REPORTE GENERADO</h2>
+      <p style="color:#666;font-size:14px;">Finca El Naranjo – Suaita, Santander</p>
+      <p id="receipt-factura" style="font-size:18px;color:#FF6F00;font-weight:bold;"></p>
+    </div>
+    <div id="receipt-details" style="margin:20px 0;"></div>
+    <div class="receipt-qr-container" id="receipt-qr"></div>
+    <p style="text-align:center;font-size:10px;color:#888;margin-top:20px;border-top:1px solid #eee;padding-top:10px;">
+      Generado desde Control Interno
+    </p>
+  </div>
 
-pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-heightLeft -= pageHeight;
-while (heightLeft >= 0) {
-position = heightLeft - imgHeight;
-pdf.addPage();
-pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-heightLeft -= pageHeight;
-}
-pdf.save(`recibo-${sale.factura}.pdf`);
-receiptTemplate.style.display = 'none';
-}).catch(error => {
-console.error('Error generando PDF:', error);
-receiptTemplate.style.display = 'none';
-this.notify('Error al generar PDF', 'error');
-});
-}, 100);
-}
-downloadExpenseReceipt(expenseId) {
-const expense = this.gastos.find(g => g.id === expenseId);
-if (!expense) return;
-const receiptTemplate = document.getElementById('receipt-template');
-const receiptDetails = document.getElementById('receipt-details');
-const receiptFactura = document.getElementById('receipt-factura');
-const receiptTotal = document.getElementById('receipt-total');
-const qrContainer = document.getElementById('receipt-qr-container');
-const paymentInfo = document.getElementById('receipt-payment-info');
+  <!-- Librerías externas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    // Corregir la asignación de jsPDF
+    const { jsPDF } = window.jspdf;
+    
+    // === CAPTCHA ===
+    function generateCaptcha() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let captcha = '';
+      for (let i = 0; i < 5; i++) {
+        captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      document.getElementById('captcha-text').textContent = captcha;
+    }
+    generateCaptcha();
 
-const expenseRef = `G-${expenseId.substring(0, 8)}`;
-receiptFactura.textContent = expenseRef;
-receiptTotal.textContent = `$${expense.monto.toLocaleString('es-CO')}`;
-const tipoLabels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', otros: 'Otros' };
-let detailsHTML = `
-<div class="receipt-detail"><span>Tipo:</span><span>${tipoLabels[expense.tipo] || expense.tipo}</span></div>
-<div class="receipt-detail"><span>Descripción:</span><span>${expense.descripcion || '-'}</span></div>
-<div class="receipt-detail"><span>Monto:</span><span>$${expense.monto.toLocaleString('es-CO')}</span></div>
-<div class="receipt-detail"><span>Fecha:</span><span>${this.formatDateTime(expense.fechaCompleta)}</span></div>
-`;
-receiptDetails.innerHTML = detailsHTML;
-paymentInfo.style.display = 'none';
-document.querySelector('.receipt-title').textContent = 'RECIBO DE GASTO';
+    // === NOTIFICACIONES ===
+    function showNotification(message, type) {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 3000);
+    }
 
-const qrText = `${expenseRef}\n$${expense.monto.toLocaleString('es-CO')}\n${this.formatDateTime(expense.fechaCompleta)}`;
-const qrUrl = generateQR(qrText, 80);
-qrContainer.innerHTML = `<div style="text-align:center;"><img src="${qrUrl}" alt="QR" style="width:80px;height:80px;"></div>`;
+    // === AUTENTICACIÓN ===
+    document.getElementById('login-btn').addEventListener('click', () => {
+      const password = document.getElementById('password').value.trim();
+      const captcha = document.getElementById('captcha-input').value.trim();
+      
+      if (!password) return showNotification('Ingrese la contraseña', 'error');
+      if (!captcha || captcha.toUpperCase() !== document.getElementById('captcha-text').textContent) {
+        showNotification('Verificación incorrecta', 'error');
+        generateCaptcha();
+        document.getElementById('captcha-input').value = '';
+        return;
+      }
+      
+      if (password === 'control2026') {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        cargarDashboard();
+        showNotification('¡Bienvenido al sistema!', 'success');
+      } else {
+        showNotification('Contraseña incorrecta', 'error');
+        document.getElementById('password').value = '';
+      }
+    });
 
-receiptTemplate.style.display = 'block';
+    // === LECTURA SEGURA DE INDEXEDDB ===
+    async function getAllFromStore(storeName) {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('FincaElNaranjoDB', 3); // Versión actualizada
+        req.onsuccess = () => {
+          const db = req.result;
+          const tx = db.transaction([storeName], 'readonly');
+          const store = tx.objectStore(storeName);
+          const getAllReq = store.getAll();
+          getAllReq.onsuccess = () => {
+            resolve(getAllReq.result);
+            db.close();
+          };
+          getAllReq.onerror = () => {
+            db.close();
+            reject(getAllReq.error);
+          };
+        };
+        req.onerror = () => reject(req.error);
+        req.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          // Crear almacenes si no existen
+          if (!db.objectStoreNames.contains('ventas')) {
+            db.createObjectStore('ventas', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('gastos')) {
+            db.createObjectStore('gastos', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('notas')) {
+            db.createObjectStore('notas', { keyPath: 'id' });
+          }
+          if (!db.objectStoreNames.contains('metadata')) {
+            const metaStore = db.createObjectStore('metadata', { keyPath: 'key' });
+            metaStore.put({ key: 'nextFacturaNumber', value: 1 });
+          }
+        };
+      });
+    }
 
-setTimeout(() => {
-html2canvas(receiptTemplate, {
-scale: 2,
-useCORS: true,
-allowTaint: true
-}).then(canvas => {
-const imgData = canvas.toDataURL('image/png');
-const pdf = new jsPDF('p', 'mm', 'a4');
-const imgWidth = 210;
-const pageHeight = 297;
-const imgHeight = (canvas.height * imgWidth) / canvas.width;
-let heightLeft = imgHeight;
-let position = 0;
+    // === DASHBOARD ===
+    async function cargarDashboard() {
+      try {
+        const ventas = await getAllFromStore('ventas');
+        const gastos = await getAllFromStore('gastos');
+        
+        const totalVentas = ventas.reduce((sum, v) => sum + v.total, 0);
+        const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0);
+        const debe = ventas.reduce((sum, v) => sum + (v.debe || 0), 0);
+        const neto = totalVentas - totalGastos;
+        
+        document.getElementById('dashboard-ventas').textContent = `$${totalVentas.toLocaleString('es-CO')}`;
+        document.getElementById('dashboard-gastos').textContent = `$${totalGastos.toLocaleString('es-CO')}`;
+        document.getElementById('dashboard-neto').textContent = `$${neto.toLocaleString('es-CO')}`;
+        document.getElementById('dashboard-debe').textContent = `$${debe.toLocaleString('es-CO')}`;
+      } catch (e) {
+        console.error('Error cargando dashboard:', e);
+      }
+    }
 
-pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-heightLeft -= pageHeight;
-while (heightLeft >= 0) {
-position = heightLeft - imgHeight;
-pdf.addPage();
-pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-heightLeft -= pageHeight;
-}
-pdf.save(`gasto-${expenseId.substring(0, 8)}.pdf`);
-receiptTemplate.style.display = 'none';
-document.querySelector('.receipt-title').textContent = 'RECIBO DE VENTA';
-}).catch(error => {
-console.error('Error generando PDF:', error);
-receiptTemplate.style.display = 'none';
-document.querySelector('.receipt-title').textContent = 'RECIBO DE VENTA';
-this.notify('Error al generar PDF', 'error');
-});
-}, 100);
-}
-generateFullReport() {
-if (this.ventas.length === 0 && this.gastos.length === 0) {
-return this.notify('Sin datos para PDF', 'error');
-}
-const now = new Date();
-document.getElementById('pdf-report-date').textContent = this.formatDateTime(now.toISOString());
-document.getElementById('pdf-ventas-count').textContent = this.ventas.length;
-document.getElementById('pdf-gastos-count').textContent = this.gastos.length;
-const ingr = this.ventas.reduce((s, v) => s + v.total, 0);
-const gast = this.gastos.reduce((s, g) => s + g.monto, 0);
-const neto = ingr - gast;
-document.getElementById('pdf-ingresos').textContent = '$' + ingr.toLocaleString('es-CO');
-document.getElementById('pdf-gastos').textContent = '$' + gast.toLocaleString('es-CO');
-document.getElementById('pdf-neto').textContent = '$' + neto.toLocaleString('es-CO');
-document.getElementById('pdf-total-ingresos').textContent = '$' + ingr.toLocaleString('es-CO');
-document.getElementById('pdf-total-gastos').textContent = '$' + gast.toLocaleString('es-CO');
-document.getElementById('pdf-balance-neto').textContent = '$' + neto.toLocaleString('es-CO');
+    // === FUNCIONES PRINCIPALES ===
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleString('es-CO', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
 
-const pdfSales = document.getElementById('pdf-sales-table');
-if (pdfSales) {
-if (this.ventas.length === 0) {
-pdfSales.innerHTML = '<tr><td colspan="7" style="text-align:center">No hay ventas</td></tr>';
-} else {
-const sorted = this.sortChronological(this.ventas);
-pdfSales.innerHTML = sorted.map(v => `
-<tr>
-<td>${v.factura}</td>
-<td>${v.cliente}</td>
-<td>${v.cubetas}</td>
-<td>$${v.precio.toLocaleString('es-CO')}</td>
-<td>$${v.total.toLocaleString('es-CO')}</td>
-<td>$${(v.debe || 0).toLocaleString('es-CO')}</td>
-<td>${this.formatDateTime(v.fechaCompleta)}</td>
-</tr>
-`).join('');
-}
-}
+    function generateQR(text) {
+      const encoded = encodeURIComponent(text);
+      return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encoded}`;
+    }
 
-const pdfExpenses = document.getElementById('pdf-expenses-table');
-if (pdfExpenses) {
-if (this.gastos.length === 0) {
-pdfExpenses.innerHTML = '<tr><td colspan="4" style="text-align:center">No hay gastos</td></tr>';
-} else {
-const sorted = this.sortChronological(this.gastos);
-const labels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', otros: 'Otros' };
-pdfExpenses.innerHTML = sorted.map(g => `
-<tr>
-<td>${labels[g.tipo] || g.tipo}</td>
-<td>${g.descripcion || '-'}</td>
-<td>$${g.monto.toLocaleString('es-CO')}</td>
-<td>${this.formatDateTime(g.fechaCompleta)}</td>
-</tr>
-`).join('');
-}
-}
+    function mostrarTabla(titulo, headers, filas) {
+      let html = `<h3 style="color:#000;margin-bottom:16px;font-size:1.4rem;font-weight:700;">${titulo}</h3><table><thead><tr>`;
+      headers.forEach(h => html += `<th>${h}</th>`);
+      html += `</tr></thead><tbody>`;
+      filas.forEach(fila => {
+        html += `<tr>${fila.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById('resultados').innerHTML = html;
+    }
 
-const template = document.getElementById('pdf-template');
-if (template) {
-template.style.display = 'block';
-setTimeout(() => {
-html2canvas(template, {
-scale: 2,
-useCORS: true,
-allowTaint: true
-}).then(canvas => {
-const imgData = canvas.toDataURL('image/png');
-const pdf = new jsPDF('p', 'mm', 'a4');
-const imgWidth = 210;
-const pageHeight = 297;
-const imgHeight = (canvas.height * imgWidth) / canvas.width;
-let heightLeft = imgHeight;
-let position = 0;
+    async function filtrarPorMes(arr, mesIndex) {
+      const now = new Date();
+      const año = now.getFullYear();
+      return arr.filter(item => {
+        const fecha = new Date(item.fechaCompleta);
+        return fecha.getMonth() === mesIndex && fecha.getFullYear() === año;
+      });
+    }
 
-pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-heightLeft -= pageHeight;
-while (heightLeft >= 0) {
-position = heightLeft - imgHeight;
-pdf.addPage();
-pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-heightLeft -= pageHeight;
-}
-pdf.save(`reporte-finca-el-naranjo-${now.toISOString().slice(0, 10)}.pdf`);
-template.style.display = 'none';
-this.notify('PDF generado exitosamente');
-}).catch(error => {
-console.error('Error generando reporte:', error);
-template.style.display = 'none';
-this.notify('Error al generar reporte', 'error');
-});
-}, 100);
-}
-}
-}
-const businessManager = new BusinessManager();
+    async function descargarExtractoVentas() {
+      const mes = document.getElementById('mes-select').value;
+      if (mes === '') return showNotification('Seleccione un mes', 'error');
+      try {
+        const ventas = await getAllFromStore('ventas');
+        const filtradas = await filtrarPorMes(ventas, parseInt(mes));
+        if (filtradas.length === 0) return showNotification('No hay ventas este mes', 'error');
+        const headers = ['Factura', 'Cliente', 'Cubetas', 'Total', 'Fecha'];
+        const filas = filtradas.map(v => [
+          v.factura,
+          v.cliente,
+          v.cubetas,
+          `$${v.total.toLocaleString('es-CO')}`,
+          formatDate(v.fechaCompleta)
+        ]);
+        mostrarTabla(`Ventas – ${new Date(0, mes).toLocaleDateString('es-CO', { month: 'long' })}`, headers, filas);
+        generarPDF('extracto-ventas', headers, filas);
+      } catch (e) {
+        console.error(e);
+        showNotification('Error al cargar ventas', 'error');
+      }
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
-const pinInput = document.getElementById('pin-input');
-pinInput.addEventListener('input', () => {
-pinInput.value = pinInput.value.replace(/./g, '');
-});
-const pinButtons = document.querySelectorAll('.pin-btn');
-pinButtons.forEach(btn => {
-btn.addEventListener('click', () => {
-const val = btn.dataset.value;
-const action = btn.dataset.action;
-if (action === 'clear') pinInput.value = '';
-else if (action === 'enter') {
-if (pinInput.value === '2007') {
-document.getElementById('pin-screen').style.opacity = '0';
-setTimeout(() => {
-document.getElementById('pin-screen').style.display = 'none';
-document.getElementById('main-content').style.display = 'block';
-document.getElementById('main-content').style.opacity = '1';
-businessManager.notify('¡Bienvenido!');
-}, 300);
-} else {
-businessManager.notify('PIN incorrecto', 'error');
-const c = document.querySelector('.pin-container');
-c.style.animation = 'shake 0.4s';
-setTimeout(() => c.style.animation = '', 400);
-pinInput.value = '';
-}
-} else if (val !== undefined && pinInput.value.length < 4) {
-pinInput.value += val;
-}
-});
-});
-});
+    async function descargarExtractoGastos() {
+      const mes = document.getElementById('mes-select').value;
+      if (mes === '') return showNotification('Seleccione un mes', 'error');
+      try {
+        const gastos = await getAllFromStore('gastos');
+        const filtrados = await filtrarPorMes(gastos, parseInt(mes));
+        if (filtrados.length === 0) return showNotification('No hay gastos este mes', 'error');
+        const tipoLabels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', otros: 'Otros' };
+        const headers = ['Tipo', 'Descripción', 'Monto', 'Fecha'];
+        const filas = filtrados.map(g => [
+          tipoLabels[g.tipo] || g.tipo,
+          g.descripcion || '-',
+          `$${g.monto.toLocaleString('es-CO')}`,
+          formatDate(g.fechaCompleta)
+        ]);
+        mostrarTabla(`Gastos – ${new Date(0, mes).toLocaleDateString('es-CO', { month: 'long' })}`, headers, filas);
+        generarPDF('extracto-gastos', headers, filas);
+      } catch (e) {
+        console.error(e);
+        showNotification('Error al cargar gastos', 'error');
+      }
+    }
 
-// Eventos
-document.getElementById('agregar-venta')?.addEventListener('click', () => {
-const cliente = document.getElementById('cliente')?.value.trim();
-const factura = document.getElementById('factura')?.value.trim();
-const cub = parseInt(document.getElementById('cubetas')?.value) || 0;
-const prec = parseInt(document.getElementById('precio')?.value) || 0;
-const fecha = document.getElementById('fecha-venta')?.value;
-const cDebe = parseInt(document.getElementById('cubetas-debe')?.value) || 0;
-const mDebe = parseInt(document.getElementById('monto-debe')?.value) || 0;
-if (!cliente) return businessManager.notify('Cliente requerido', 'error');
-if (!factura) return businessManager.notify('Número de factura requerido', 'error');
-if (cub <= 0) return businessManager.notify('Cubetas > 0', 'error');
-if (prec <= 0) return businessManager.notify('Precio > 0', 'error');
-if (!fecha) return businessManager.notify('Fecha y hora requeridas', 'error');
-const total = cub * prec;
-let debe = 0;
-if (mDebe > 0) {
-if (mDebe > total) return businessManager.notify('Crédito ≤ total', 'error');
-debe = mDebe;
-} else if (cDebe > 0) {
-if (cDebe > cub) return businessManager.notify('Cub. crédito ≤ vendidas', 'error');
-debe = cDebe * prec;
-}
-const data = {
-cliente,
-factura,
-cubetas: cub,
-precio: prec,
-total,
-debe,
-fechaCompleta: new Date(fecha).toISOString()
-};
-if (businessManager.currentEditSale !== undefined) {
-businessManager.updateSale(businessManager.currentEditSale, data);
-businessManager.currentEditSale = undefined;
-} else {
-businessManager.addSale(data);
-}
-document.getElementById('cliente').value = '';
-document.getElementById('factura').value = '';
-businessManager.updateFacturaInput();
-document.getElementById('cubetas').value = '1';
-document.getElementById('precio').value = '5000';
-document.getElementById('cubetas-debe').value = '0';
-document.getElementById('monto-debe').value = '0';
-document.getElementById('fecha-venta').value = new Date().toISOString().slice(0, 16);
-});
+    async function clientesTop() {
+      try {
+        const ventas = await getAllFromStore('ventas');
+        const conteo = {};
+        ventas.forEach(v => {
+          conteo[v.cliente] = (conteo[v.cliente] || 0) + 1;
+        });
+        const topClientes = Object.entries(conteo)
+          .filter(([_, count]) => count > 4)
+          .sort((a, b) => b[1] - a[1])
+          .map(([cliente, count]) => {
+            const total = ventas
+              .filter(v => v.cliente === cliente)
+              .reduce((sum, v) => sum + v.total, 0);
+            return [cliente, count, `$${total.toLocaleString('es-CO')}`];
+          });
+        if (topClientes.length === 0) return showNotification('No hay clientes con +4 ventas', 'error');
+        const headers = ['Cliente', 'N° Ventas', 'Total Comprado ($)'];
+        mostrarTabla('Clientes con más de 4 ventas', headers, topClientes);
+        generarPDF('clientes-top', headers, topClientes);
+      } catch (e) {
+        console.error(e);
+        showNotification('Error al cargar clientes', 'error');
+      }
+    }
 
-document.getElementById('agregar-gasto')?.addEventListener('click', () => {
-const tipo = document.getElementById('tipo-gasto')?.value;
-const desc = document.getElementById('descripcion-gasto')?.value;
-const monto = parseInt(document.getElementById('monto-gasto')?.value) || 0;
-const fecha = document.getElementById('fecha-gasto')?.value;
-if (!tipo) return businessManager.notify('Seleccione tipo', 'error');
-if (!monto || monto <= 0) return businessManager.notify('Monto > 0', 'error');
-if (!fecha) return businessManager.notify('Fecha y hora requeridas', 'error');
-const data = { tipo, descripcion: desc, monto, fechaCompleta: new Date(fecha).toISOString() };
-if (businessManager.currentEditExpense !== undefined) {
-businessManager.updateExpense(businessManager.currentEditExpense, data);
-businessManager.currentEditExpense = undefined;
-} else {
-businessManager.addExpense(data);
-}
-document.getElementById('descripcion-gasto').value = '';
-document.getElementById('monto-gasto').value = '50000';
-document.getElementById('fecha-gasto').value = new Date().toISOString().slice(0, 16);
-});
+    async function ventasPorCliente() {
+      const nombre = document.getElementById('cliente-input').value.trim();
+      if (!nombre) return showNotification('Ingrese nombre de cliente', 'error');
+      try {
+        const ventas = await getAllFromStore('ventas');
+        const delCliente = ventas.filter(v => v.cliente.toLowerCase().includes(nombre.toLowerCase()));
+        if (delCliente.length === 0) return showNotification('No se encontraron ventas', 'error');
+        const headers = ['Factura', 'Cubetas', 'Total', 'Crédito', 'Fecha'];
+        const filas = delCliente.map(v => [
+          v.factura,
+          v.cubetas,
+          `$${v.total.toLocaleString('es-CO')}`,
+          v.debe ? `$${v.debe.toLocaleString('es-CO')}` : '—',
+          formatDate(v.fechaCompleta)
+        ]);
+        mostrarTabla(`Ventas de: ${nombre}`, headers, filas);
+        generarPDF(`ventas-${nombre}`, headers, filas);
+      } catch (e) {
+        console.error(e);
+        showNotification('Error al buscar cliente', 'error');
+      }
+    }
 
-document.getElementById('guardar-nota')?.addEventListener('click', () => {
-businessManager.saveNote();
-});
+    // Función corregida para generar PDF
+    function generarPDF(nombre, headers, filas) {
+      const template = document.getElementById('receipt-template');
+      const details = document.getElementById('receipt-details');
+      const qrContainer = document.getElementById('receipt-qr');
 
-document.getElementById('descargar-notas')?.addEventListener('click', () => {
-businessManager.downloadAllNotes();
-});
+      // Construir la tabla HTML
+      let html = `<table style="width:100%;border-collapse:collapse;font-size:12px;">`;
+      html += `<thead><tr style="background:#fff8f0;">`;
+      headers.forEach(h => html += `<th style="padding:6px;border:1px solid #ddd;">${h}</th>`);
+      html += `</tr></thead><tbody>`;
+      filas.forEach(fila => {
+        html += `<tr>`;
+        fila.forEach(cell => html += `<td style="padding:6px;border:1px solid #ddd;">${cell}</td>`);
+        html += `</tr>`;
+      });
+      html += `</tbody></table>`;
+      details.innerHTML = html;
+      document.getElementById('receipt-factura').textContent = nombre.toUpperCase();
 
-document.getElementById('generar-pdf')?.addEventListener('click', () => {
-businessManager.generateFullReport();
-});
+      // Generar QR
+      const qrText = `Reporte: ${nombre}\nGenerado: ${new Date().toLocaleString('es-CO')}\nOrigen: Control Interno`;
+      const qrUrl = generateQR(qrText);
+      
+      const qrImage = new Image();
+      qrImage.src = qrUrl;
+      
+      qrImage.onload = () => {
+        qrContainer.innerHTML = '';
+        qrContainer.appendChild(qrImage);
+        
+        template.style.display = 'block';
+        
+        // Usar html2canvas para capturar el template
+        html2canvas(template, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true
+        }).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const imgWidth = 210;
+          const pageHeight = 295;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
 
-// === DATOS DEMO INICIALES ===
-setTimeout(async () => {
-const ventas = await db.getAllVentas();
-const gastos = await db.getAllGastos();
-const notas = await db.getAllNotas();
-if (ventas.length === 0 && gastos.length === 0 && notas.length === 0) {
-await db.saveVenta({
-id: 'demo1',
-cliente: "Carnes Don Juan",
-cubetas: 10,
-precio: 5000,
-total: 50000,
-debe: 0,
-fechaCompleta: new Date(2026, 0, 20, 9, 30).toISOString(),
-factura: "F-0001"
-});
-await db.saveGasto({
-id: 'demo2',
-tipo: "purina",
-descripcion: "Bulto 40kg",
-monto: 85000,
-fechaCompleta: new Date(2026, 0, 19, 11, 20).toISOString()
-});
-await db.saveNota({
-id: 'demo-note1',
-texto: "Recordar comprar más bolsas para pollo.",
-fechaRegistro: new Date(2026, 0, 21, 10, 0).toISOString()
-});
-await db.updateNextFacturaNumber(2);
-businessManager.loadData();
-businessManager.loadNextFacturaNumber();
-}
-}, 300);
-</script>
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
+          pdf.save(`${nombre}.pdf`);
+          template.style.display = 'none';
+        }).catch(error => {
+          console.error('Error en html2canvas:', error);
+          template.style.display = 'none';
+          showNotification('Error al generar el PDF', 'error');
+        });
+      };
+      
+      qrImage.onerror = () => {
+        console.error('Error al cargar QR');
+        qrContainer.innerHTML = '<p style="color:red;">Error QR</p>';
+        template.style.display = 'block';
+        
+        html2canvas(template, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true
+        }).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const imgWidth = 210;
+          const pageHeight = 295;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
+          pdf.save(`${nombre}.pdf`);
+          template.style.display = 'none';
+        }).catch(error => {
+          console.error('Error en html2canvas sin QR:', error);
+          template.style.display = 'none';
+          showNotification('Error al generar el PDF', 'error');
+        });
+      };
+    }
+
+    function goToMain() {
+      window.location.href = 'index.html';
+    }
+  </script>
 </body>
 </html>
 
