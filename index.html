@@ -25,6 +25,10 @@
 --shadow: 0 6px 16px rgba(0,0,0,0.08);
 --hover-shadow: 0 8px 20px rgba(0,0,0,0.1);
 --accent: #FFD700;
+--info-color: #2196F3;
+--warning-color: #FF9800;
+--danger-color: #F44336;
+--success-color: #4CAF50;
 }
 * {
 margin: 0;
@@ -138,11 +142,15 @@ touch-action: manipulation;
 }
 .pin-btn:hover, .pin-btn:active {
 transform: scale(0.98);
+box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 .pin-btn.clear, .pin-btn.enter {
 background: var(--primary);
 color: white;
 font-size: 1.2rem;
+}
+.pin-btn.enter {
+background: var(--success-color);
 }
 /* Main Layout */
 header {
@@ -199,9 +207,10 @@ background: var(--card-bg);
 border-radius: 14px;
 padding: 18px;
 box-shadow: var(--shadow);
-transition: transform 0.2s ease;
+transition: transform 0.2s ease, box-shadow 0.2s ease;
 position: relative;
 overflow: hidden;
+border: 1px solid rgba(0,0,0,0.05);
 }
 .card::before {
 content: '';
@@ -214,6 +223,7 @@ background: linear-gradient(to bottom, var(--primary), var(--secondary));
 }
 .card:hover {
 transform: translateY(-3px);
+box-shadow: var(--hover-shadow);
 }
 .card-title {
 font-size: 1.4rem;
@@ -233,10 +243,10 @@ background: linear-gradient(to right, var(--light-orange), transparent);
 margin-left: 10px;
 }
 .expense-card::before {
-background: linear-gradient(to bottom, var(--light-orange), var(--secondary));
+background: linear-gradient(to bottom, var(--warning-color), #E65100);
 }
 .expense-card .card-title {
-color: var(--secondary);
+color: #E65100;
 }
 .form-group {
 margin-bottom: 16px;
@@ -251,7 +261,7 @@ font-size: 0.95rem;
 input, select, textarea {
 width: 100%;
 padding: 12px;
-border: 1.5px solid var(--light-orange);
+border: 1.5px solid #E0E0E0;
 border-radius: 10px;
 font-size: 1rem;
 transition: all 0.3s ease;
@@ -259,35 +269,68 @@ background-color: white;
 }
 input:focus, select:focus, textarea:focus {
 outline: none;
-border-color: var(--secondary);
-box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
+border-color: var(--primary);
+box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.2);
+}
+select {
+cursor: pointer;
 }
 .btn {
 display: block;
 width: 100%;
 padding: 14px;
-background: var(--primary);
-color: white;
+background: linear-gradient(135deg, var(--accent), #E6B800);
+color: var(--black);
 border: none;
 border-radius: 10px;
 font-size: 1.1rem;
 font-weight: 600;
 cursor: pointer;
-transition: all 0.2s ease;
+transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 text-align: center;
-box-shadow: 0 3px 6px rgba(255, 111, 0, 0.3);
+box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 touch-action: manipulation;
+position: relative;
+overflow: hidden;
+}
+.btn::before {
+content: '';
+position: absolute;
+top: 50%;
+left: 50%;
+width: 0;
+height: 0;
+border-radius: 50%;
+background: rgba(255,255,255,0.3);
+transform: translate(-50%, -50%);
+transition: width 0.6s, height 0.6s;
+}
+.btn:hover::before {
+width: 300px;
+height: 300px;
 }
 .btn:hover {
-background: var(--secondary);
 transform: translateY(-2px);
-box-shadow: 0 4px 8px rgba(216, 67, 21, 0.4);
+box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4);
+}
+.btn:active {
+transform: translateY(0);
 }
 .btn-expense {
-background: linear-gradient(45deg, var(--light-orange), var(--secondary));
+background: linear-gradient(135deg, var(--warning-color), #E65100);
+box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
 }
 .btn-expense:hover {
-background: linear-gradient(45deg, var(--secondary), #BF360C);
+box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+background: linear-gradient(135deg, #E65100, #BF360C);
+}
+.btn-info {
+background: linear-gradient(135deg, var(--info-color), #0D47A1);
+box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+.btn-info:hover {
+box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+background: linear-gradient(135deg, #0D47A1, #0A2463);
 }
 /* Resumen */
 .results {
@@ -297,7 +340,7 @@ border-radius: 14px;
 padding: 18px;
 }
 .expense-summary {
-background: linear-gradient(135deg, var(--light-orange), var(--secondary));
+background: linear-gradient(135deg, var(--warning-color), #E65100);
 color: white;
 border-radius: 14px;
 padding: 18px;
@@ -324,13 +367,15 @@ font-weight: 700;
 font-size: 1.6rem !important;
 color: var(--accent);
 }
-.neto-positivo { color: #4CAF50 !important; }
-.neto-negativo { color: #F44336 !important; }
+.neto-positivo { color: var(--success-color) !important; }
+.neto-negativo { color: var(--danger-color) !important; }
 /* Tablas */
 .table-container {
 overflow-x: auto;
 border-radius: 10px;
 margin: 16px 0;
+background: white;
+box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 .sales-table, .expenses-table, .notes-table {
 width: 100%;
@@ -348,7 +393,10 @@ font-size: 0.85rem;
 .sales-table td, .expenses-table td, .notes-table td {
 padding: 12px 14px;
 font-size: 0.9rem;
-border-bottom: 1px solid var(--light-orange);
+border-bottom: 1px solid #E0E0E0;
+}
+.sales-table tr:hover, .expenses-table tr:hover, .notes-table tr:hover {
+background: rgba(224, 224, 224, 0.3);
 }
 .actions {
 display: flex;
@@ -361,17 +409,21 @@ font-size: 0.75rem;
 cursor: pointer;
 border: none;
 font-weight: 600;
+transition: all 0.2s ease;
+}
+.action-btn:hover {
+transform: scale(1.1);
 }
 .edit-btn {
 background: var(--light-orange);
 color: var(--black);
 }
 .delete-btn {
-background: #EF5350;
+background: var(--danger-color);
 color: white;
 }
 .download-btn {
-background: #2196F3;
+background: var(--info-color);
 color: white;
 }
 /* Footer */
@@ -389,10 +441,10 @@ margin-top: 16px;
 padding: 16px;
 background: rgba(255, 243, 224, 0.5);
 border-radius: 10px;
-border-left: 3px solid var(--light-orange);
+border-left: 3px solid var(--warning-color);
 }
 .debt-title {
-color: var(--secondary);
+color: #E65100;
 font-weight: 600;
 margin-bottom: 12px;
 font-size: 1rem;
@@ -469,11 +521,11 @@ padding: 12px;
 font-weight: bold;
 }
 .pdf-table.expense-table th {
-background: var(--light-orange);
+background: var(--warning-color);
 }
 .pdf-table td {
 padding: 12px;
-border: 1px solid var(--light-orange);
+border: 1px solid #E0E0E0;
 color: var(--gray);
 }
 .pdf-total {
@@ -534,6 +586,11 @@ margin: 20px 0;
 display: flex;
 justify-content: space-between;
 margin-bottom: 8px;
+padding: 8px 0;
+border-bottom: 1px dashed #E0E0E0;
+}
+.receipt-detail:last-child {
+border-bottom: none;
 }
 .receipt-total {
 text-align: right;
@@ -541,6 +598,8 @@ font-size: 20px;
 font-weight: bold;
 margin-top: 15px;
 color: var(--primary);
+padding-top: 15px;
+border-top: 2px solid var(--primary);
 }
 .receipt-footer {
 margin-top: 25px;
@@ -580,21 +639,21 @@ border-top: 1px solid var(--light-orange);
 display: flex;
 align-items: center;
 gap: 10px;
-background: linear-gradient(135deg, var(--primary), var(--secondary));
-color: white;
+background: linear-gradient(135deg, var(--accent), #E6B800);
+color: var(--black);
 text-decoration: none;
 padding: 12px 24px;
 border-radius: 14px;
 font-weight: 600;
 font-size: 1rem;
 transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-box-shadow: 0 4px 12px rgba(255, 111, 0, 0.3);
+box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
 transform: translateY(0);
 }
 .tool-btn:hover,
 .tool-btn:focus {
 transform: translateY(-3px);
-box-shadow: 0 6px 16px rgba(255, 111, 0, 0.45);
+box-shadow: 0 6px 16px rgba(255, 215, 0, 0.45);
 outline: none;
 }
 .tool-icon {
@@ -613,6 +672,45 @@ font-size: 0.95rem;
 min-height: 100px;
 }
 }
+/* Notification */
+.notification {
+padding: 12px 16px;
+border-radius: 10px;
+color: white;
+font-weight: 600;
+box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+position: fixed;
+top: 80px;
+left: 50%;
+transform: translateX(-50%);
+z-index: 10000;
+animation: slideDown 0.3s ease;
+}
+@keyframes slideDown {
+from {
+opacity: 0;
+transform: translate(-50%, -20px);
+}
+to {
+opacity: 1;
+transform: translate(-50%, 0);
+}
+}
+/* Product Badge */
+.product-badge {
+display: inline-block;
+padding: 4px 12px;
+border-radius: 20px;
+font-size: 0.8rem;
+font-weight: 600;
+background: var(--light-orange);
+color: var(--black);
+}
+.product-badge.criollo { background: #FFE0B2; color: #E65100; }
+.product-badge.semicriollo { background: #FFECB3; color: #5D4037; }
+.product-badge.cuajada { background: #E3F2FD; color: #0D47A1; }
+.product-badge.queso { background: #FFF3E0; color: #E65100; }
+.product-badge.otros { background: #F3E5F5; color: #4A148C; }
 </style>
 </head>
 <body>
@@ -646,7 +744,7 @@ min-height: 100px;
 <div class="logo"></div>
 <div>
 <h1>Finca El Naranjo</h1>
-<p class="subtitle">Registro de Ventas y Gastos</p>
+<p class="subtitle">Registro de Ventas y Gastos - Productos Agropecuarios</p>
 </div>
 </div>
 <div class="toolbar">
@@ -658,37 +756,60 @@ min-height: 100px;
 </header>
 <div class="dashboard">
 <div class="card">
-<h2 class="card-title">📝 Nueva Venta</h2>
+<h2 class="card-title">🛒 Nueva Venta</h2>
 <div class="form-group">
-<label for="cliente">Cliente</label>
-<input type="text" id="cliente" placeholder="Nombre del cliente">
+<label for="cliente">Cliente *</label>
+<input type="text" id="cliente" placeholder="Nombre del cliente" required>
 </div>
 <div class="form-group">
-<label for="factura">N° Factura</label>
-<input type="text" id="factura" placeholder="F-0001">
+<label for="factura">N° Factura *</label>
+<input type="text" id="factura" placeholder="F-0001" readonly>
 </div>
 <div class="form-group">
-<label for="cubetas">Cubetas</label>
-<input type="number" id="cubetas" min="1" value="1">
+<label for="producto">Producto *</label>
+<select id="producto" required>
+<option value="">Seleccione un producto</option>
+<option value="pollo-criollo">Pollo Criollo</option>
+<option value="pollo-semicriollo">Pollo Semicriollo</option>
+<option value="cuajada">Cuajada</option>
+<option value="queso">Queso</option>
+<option value="otros">Otros</option>
+</select>
 </div>
 <div class="form-group">
-<label for="precio">Precio por cubeta ($)</label>
-<input type="number" id="precio" min="1" value="5000">
+<label for="cantidad">Cantidad *</label>
+<input type="number" id="cantidad" min="1" value="1" placeholder="Cantidad en unidades, libras o kilos" required>
 </div>
 <div class="form-group">
-<label for="fecha-venta">Fecha y Hora</label>
-<input type="datetime-local" id="fecha-venta">
+<label for="unidad-medida">Unidad de Medida *</label>
+<select id="unidad-medida" required>
+<option value="unidad">Unidad</option>
+<option value="libra">Libra (Lb)</option>
+<option value="kilo">Kilo (Kg)</option>
+</select>
+</div>
+<div class="form-group">
+<label for="precio">Precio por Ud, Lb o Kg ($)*</label>
+<input type="number" id="precio" min="1" value="10000" placeholder="Precio por unidad" required>
+</div>
+<div class="form-group">
+<label for="fecha-venta">Fecha y Hora *</label>
+<input type="datetime-local" id="fecha-venta" required>
+</div>
+<div class="form-group">
+<label for="notas-venta">Notas de la Venta (opcional)</label>
+<textarea id="notas-venta" rows="3" placeholder="Ej: Cliente pidió entrega a domicilio, producto especial, etc."></textarea>
 </div>
 <div class="debt-section">
 <h3 class="debt-title">💰 Crédito (opcional)</h3>
 <div class="debt-options">
 <div class="form-group">
-<label for="cubetas-debe">Cubetas a crédito</label>
-<input type="number" id="cubetas-debe" min="0" value="0">
+<label for="cantidad-debe">Cantidad a crédito</label>
+<input type="number" id="cantidad-debe" min="0" value="0" placeholder="0">
 </div>
 <div class="form-group">
 <label for="monto-debe">Monto a crédito ($)</label>
-<input type="number" id="monto-debe" min="0" value="0">
+<input type="number" id="monto-debe" min="0" value="0" placeholder="0">
 </div>
 </div>
 </div>
@@ -697,26 +818,27 @@ min-height: 100px;
 <div class="card expense-card">
 <h2 class="card-title">📦 Nuevo Gasto</h2>
 <div class="form-group">
-<label for="tipo-gasto">Tipo</label>
-<select id="tipo-gasto">
+<label for="tipo-gasto">Tipo de Gasto *</label>
+<select id="tipo-gasto" required>
 <option value="purina">Bulto de Purina</option>
 <option value="medicamento">Medicamentos</option>
 <option value="transporte">Transporte</option>
 <option value="mantenimiento">Mantenimiento</option>
+<option value="alimentacion">Alimentación</option>
 <option value="otros">Otros</option>
 </select>
 </div>
 <div class="form-group">
-<label for="descripcion-gasto">Descripción</label>
-<textarea id="descripcion-gasto" rows="2" placeholder="Detalles"></textarea>
+<label for="descripcion-gasto">Descripción *</label>
+<textarea id="descripcion-gasto" rows="2" placeholder="Detalles del gasto" required></textarea>
 </div>
 <div class="form-group">
-<label for="monto-gasto">Monto ($)</label>
-<input type="number" id="monto-gasto" min="1" value="50000">
+<label for="monto-gasto">Monto ($)*</label>
+<input type="number" id="monto-gasto" min="1" value="50000" placeholder="Monto del gasto" required>
 </div>
 <div class="form-group">
-<label for="fecha-gasto">Fecha y Hora</label>
-<input type="datetime-local" id="fecha-gasto">
+<label for="fecha-gasto">Fecha y Hora *</label>
+<input type="datetime-local" id="fecha-gasto" required>
 </div>
 <button class="btn btn-expense" id="agregar-gasto">➕ Registrar Gasto</button>
 </div>
@@ -726,7 +848,7 @@ min-height: 100px;
 <label for="nota-texto">Contenido de la nota</label>
 <textarea id="nota-texto" placeholder="Escribe tu nota aquí..." rows="3"></textarea>
 </div>
-<button class="btn" id="guardar-nota">💾 Guardar Nota</button>
+<button class="btn btn-info" id="guardar-nota">💾 Guardar Nota</button>
 <div class="table-container" style="margin-top: 16px;">
 <table class="notes-table">
 <thead>
@@ -741,13 +863,13 @@ min-height: 100px;
 </tbody>
 </table>
 </div>
-<button class="btn" id="descargar-notas" style="margin-top: 16px;">📥 Descargar Notas (PDF)</button>
+<button class="btn btn-info" id="descargar-notas" style="margin-top: 16px;">📥 Descargar Notas (PDF)</button>
 </div>
 <div class="card">
 <h2 class="card-title">📊 Resumen Financiero</h2>
 <div class="results">
 <div class="result-item">
-<span class="result-label">Ventas</span>
+<span class="result-label">Ventas Totales</span>
 <span class="result-value" id="total-ventas">0</span>
 </div>
 <div class="result-item">
@@ -755,13 +877,13 @@ min-height: 100px;
 <span class="result-value total" id="total-ingresos">0</span>
 </div>
 <div class="result-item">
-<span class="result-label">Créditos</span>
-<span class="result-value" id="total-debe" style="color: var(--light-orange);">0</span>
+<span class="result-label">Créditos Pendientes</span>
+<span class="result-value" id="total-debe" style="color: var(--warning-color);">0</span>
 </div>
 </div>
 <div class="expense-summary">
 <div class="result-item">
-<span class="result-label">Gastos</span>
+<span class="result-label">Gastos Registrados</span>
 <span class="result-value" id="total-gastos-count">0</span>
 </div>
 <div class="result-item">
@@ -784,7 +906,8 @@ min-height: 100px;
 <tr>
 <th>Factura</th>
 <th>Cliente</th>
-<th>Cubetas</th>
+<th>Producto</th>
+<th>Cantidad</th>
 <th>Precio</th>
 <th>Total</th>
 <th>Debe</th>
@@ -793,7 +916,7 @@ min-height: 100px;
 </tr>
 </thead>
 <tbody id="ventas-lista">
-<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--gray)">Sin ventas</td></tr>
+<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--gray)">Sin ventas</td></tr>
 </tbody>
 </table>
 </div>
@@ -818,7 +941,8 @@ min-height: 100px;
 </div>
 </div>
 <div class="footer">
-<p>Finca El Naranjo &copy; 2026 | Sistema Integral</p>
+<p>Finca El Naranjo &copy; 2026 | Sistema Integral de Gestión</p>
+<p style="margin-top:4px;font-size:0.8rem">Productos: Pollo Criollo, Semicriollo, Cuajada y Queso</p>
 <p style="margin-top:4px;font-size:0.8rem">Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
 </div>
 </div>
@@ -843,16 +967,16 @@ min-height: 100px;
 </div>
 <h3 style="margin:25px 0 15px;color:var(--black);font-size:18px;">Ventas Registradas</h3>
 <table class="pdf-table">
-<thead><tr><th>Factura</th><th>Cliente</th><th>Cubetas</th><th>P. Unitario</th><th>Total</th><th>Debe</th><th>Fecha y Hora</th></tr></thead>
-<tbody id="pdf-sales-table"><tr><td colspan="7" style="text-align:center">No hay ventas</td></tr></tbody>
+<thead><tr><th>Factura</th><th>Cliente</th><th>Producto</th><th>Cantidad</th><th>Unidad</th><th>P. Unitario</th><th>Total</th><th>Debe</th><th>Fecha</th></tr></thead>
+<tbody id="pdf-sales-table"><tr><td colspan="9" style="text-align:center">No hay ventas</td></tr></tbody>
 </table>
-<h3 style="margin:25px 0 15px;color:var(--light-orange);font-size:18px;">Gastos Registrados</h3>
+<h3 style="margin:25px 0 15px;color:var(--warning-color);font-size:18px;">Gastos Registrados</h3>
 <table class="pdf-table expense-table">
-<thead><tr><th>Tipo</th><th>Descripción</th><th>Monto</th><th>Fecha y Hora</th></tr></thead>
+<thead><tr><th>Tipo</th><th>Descripción</th><th>Monto</th><th>Fecha</th></tr></thead>
 <tbody id="pdf-expenses-table"><tr><td colspan="4" style="text-align:center">No hay gastos</td></tr></tbody>
 </table>
 <div class="pdf-total">TOTAL INGRESOS: <span id="pdf-total-ingresos">-</span></div>
-<div class="pdf-total">TOTAL GASTOS: <span id="pdf-total-gastos" style="color:var(--light-orange)">-</span></div>
+<div class="pdf-total">TOTAL GASTOS: <span id="pdf-total-gastos" style="color:var(--warning-color)">-</span></div>
 <div class="pdf-neto">BALANCE NETO: <span id="pdf-balance-neto">-</span></div>
 <div style="margin-top:40px;text-align:center">
 <p style="color:var(--black);font-weight:bold">¡Gracias por su confianza!</p>
@@ -875,7 +999,7 @@ min-height: 100px;
 <!-- Detalles dinámicos -->
 </div>
 <div class="receipt-total" id="receipt-total">$0</div>
-<div id="receipt-qr-container" style="margin:12px 0;"></div>
+<div id="receipt-qr-container" style="margin:12px 0;text-align:center;"></div>
 <div style="margin-top:12px;font-size:9px;color:#666;text-align:center;line-height:1.3;">
 Este recibo es un comprobante de control interno y no constituye<br>
 una factura de venta ni documento equivalente según el Estatuto Tributario.
@@ -902,7 +1026,7 @@ this.init();
 }
 init() {
 return new Promise((resolve, reject) => {
-const req = indexedDB.open('FincaElNaranjoDB', 3); // Incremented version for notes
+const req = indexedDB.open('FincaElNaranjoDB', 4);
 req.onerror = () => reject(req.error);
 req.onsuccess = () => {
 this.db = req.result;
@@ -1104,6 +1228,26 @@ minute: '2-digit',
 hour12: false
 }).replace(',', '');
 }
+getProductLabel(producto) {
+const labels = {
+'pollo-criollo': 'Pollo Criollo',
+'pollo-semicriollo': 'Pollo Semicriollo',
+'cuajada': 'Cuajada',
+'queso': 'Queso',
+'otros': 'Otros'
+};
+return labels[producto] || producto;
+}
+getProductBadgeClass(producto) {
+const classes = {
+'pollo-criollo': 'criollo',
+'pollo-semicriollo': 'semicriollo',
+'cuajada': 'cuajada',
+'queso': 'queso',
+'otros': 'otros'
+};
+return classes[producto] || 'otros';
+}
 sortChronological(arr) {
 return [...arr].sort((a, b) => new Date(a.fechaCompleta || a.fechaRegistro) - new Date(b.fechaCompleta || b.fechaRegistro));
 }
@@ -1139,7 +1283,7 @@ texto: texto.trim(),
 fechaRegistro: new Date().toISOString()
 }).then(() => {
 this.loadData();
-this.notify('Nota guardada ✔️');
+this.notify('Nota guardada exitosamente');
 document.getElementById('nota-texto').value = '';
 }).catch(err => {
 console.error('Error guardando nota:', err);
@@ -1150,7 +1294,7 @@ updateNote(noteId, texto) {
 if (!texto.trim()) return this.notify('La nota no puede estar vacía', 'error');
 db.updateNota(noteId, texto.trim()).then(() => {
 this.loadData();
-this.notify('Nota actualizada ✔️');
+this.notify('Nota actualizada exitosamente');
 }).catch(err => {
 console.error('Error actualizando nota:', err);
 this.notify('Error al actualizar nota', 'error');
@@ -1159,7 +1303,7 @@ this.notify('Error al actualizar nota', 'error');
 deleteNote(noteId) {
 db.deleteNota(noteId).then(() => {
 this.loadData();
-this.notify('Nota eliminada');
+this.notify('Nota eliminada correctamente');
 }).catch(err => {
 console.error('Error eliminando nota:', err);
 this.notify('Error al eliminar nota', 'error');
@@ -1211,24 +1355,29 @@ if (y > 280) {
 doc.addPage();
 y = 20;
 }
-doc.text(`${new Date(note.fechaRegistro).toLocaleString('es-CO')}:`, 10, y);
+const dateText = `${new Date(note.fechaRegistro).toLocaleString('es-CO')}:`;
+doc.text(dateText, 10, y);
 y += 8;
-doc.text(note.texto, 10, y);
-y += 12;
+const lines = doc.splitTextToSize(note.texto, 190);
+doc.text(lines, 10, y);
+y += 8 * lines.length + 6;
 });
 doc.save('blog-de-notas.pdf');
-this.notify('Notas descargadas ✔️');
+this.notify('Notas descargadas exitosamente');
 }
-// === VENTAS Y GASTOS (sin cambios) ===
+// === VENTAS ===
 addSale(data) {
 let factura = data.factura || `F-${String(this.nextFacturaNumber).padStart(4, '0')}`;
 db.saveVenta({
 id: Date.now() + '-' + Math.random().toString(36).substr(2, 5),
 cliente: data.cliente.trim(),
-cubetas: data.cubetas,
+producto: data.producto,
+cantidad: data.cantidad,
+unidadMedida: data.unidadMedida,
 precio: data.precio,
 total: data.total,
 debe: data.debe || 0,
+notas: data.notas || '',
 fechaCompleta: data.fechaCompleta,
 factura: factura
 }).then(() => {
@@ -1238,7 +1387,7 @@ db.updateNextFacturaNumber(this.nextFacturaNumber);
 }
 this.loadData();
 this.updateFacturaInput();
-this.notify('Venta guardada ✔️');
+this.notify('Venta guardada exitosamente');
 }).catch(err => {
 console.error('Error guardando venta:', err);
 this.notify('Error al guardar venta', 'error');
@@ -1250,15 +1399,18 @@ if (!v) return;
 db.saveVenta({
 ...v,
 cliente: data.cliente.trim(),
-cubetas: data.cubetas,
+producto: data.producto,
+cantidad: data.cantidad,
+unidadMedida: data.unidadMedida,
 precio: data.precio,
 total: data.total,
 debe: data.debe || 0,
+notas: data.notas || '',
 fechaCompleta: data.fechaCompleta,
 factura: data.factura || v.factura
 }).then(() => {
 this.loadData();
-this.notify('Venta actualizada ✔️');
+this.notify('Venta actualizada exitosamente');
 }).catch(err => {
 console.error('Error actualizando venta:', err);
 this.notify('Error al actualizar', 'error');
@@ -1269,12 +1421,28 @@ const v = this.ventas[index];
 if (!v) return;
 db.deleteVenta(v.id).then(() => {
 this.loadData();
-this.notify('Venta eliminada');
+this.notify('Venta eliminada correctamente');
 }).catch(err => {
 console.error('Error eliminando venta:', err);
 this.notify('Error al eliminar', 'error');
 });
 }
+editSale(index) {
+const v = this.ventas[index];
+if (!v) return;
+document.getElementById('cliente').value = v.cliente;
+document.getElementById('producto').value = v.producto;
+document.getElementById('cantidad').value = v.cantidad;
+document.getElementById('unidad-medida').value = v.unidadMedida || 'unidad';
+document.getElementById('precio').value = v.precio;
+document.getElementById('fecha-venta').value = new Date(v.fechaCompleta).toISOString().slice(0, 16);
+document.getElementById('notas-venta').value = v.notas || '';
+document.getElementById('cantidad-debe').value = '0';
+document.getElementById('monto-debe').value = v.debe || '0';
+this.currentEditSale = index;
+document.getElementById('agregar-venta').textContent = '✏️ Actualizar Venta';
+}
+// === GASTOS ===
 addExpense(data) {
 db.saveGasto({
 id: Date.now() + '-' + Math.random().toString(36).substr(2, 5),
@@ -1284,7 +1452,7 @@ monto: data.monto,
 fechaCompleta: data.fechaCompleta
 }).then(() => {
 this.loadData();
-this.notify('Gasto guardado ✔️', 'expense');
+this.notify('Gasto guardado exitosamente', 'expense');
 }).catch(err => {
 console.error('Error guardando gasto:', err);
 this.notify('Error al guardar gasto', 'error');
@@ -1301,7 +1469,7 @@ monto: data.monto,
 fechaCompleta: data.fechaCompleta
 }).then(() => {
 this.loadData();
-this.notify('Gasto actualizado ✔️', 'expense');
+this.notify('Gasto actualizado exitosamente', 'expense');
 }).catch(err => {
 console.error('Error actualizando gasto:', err);
 this.notify('Error al actualizar', 'error');
@@ -1312,11 +1480,21 @@ const g = this.gastos[index];
 if (!g) return;
 db.deleteGasto(g.id).then(() => {
 this.loadData();
-this.notify('Gasto eliminado', 'expense');
+this.notify('Gasto eliminado correctamente', 'expense');
 }).catch(err => {
 console.error('Error eliminando gasto:', err);
 this.notify('Error al eliminar', 'error');
 });
+}
+editExpense(index) {
+const g = this.gastos[index];
+if (!g) return;
+document.getElementById('tipo-gasto').value = g.tipo;
+document.getElementById('descripcion-gasto').value = g.descripcion;
+document.getElementById('monto-gasto').value = g.monto;
+document.getElementById('fecha-gasto').value = new Date(g.fechaCompleta).toISOString().slice(0, 16);
+this.currentEditExpense = index;
+document.getElementById('agregar-gasto').textContent = '✏️ Actualizar Gasto';
 }
 updateSummary() {
 const ingr = this.ventas.reduce((s, v) => s + v.total, 0);
@@ -1339,26 +1517,34 @@ if (netoEl) netoEl.className = `result-value total ${neto >= 0 ? 'neto-positivo'
 renderSales() {
 const list = document.getElementById('ventas-lista');
 if (this.ventas.length === 0) {
-list.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--gray)">Sin ventas</td></tr>`;
+list.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--gray)">Sin ventas</td></tr>`;
 return;
 }
 const sorted = this.sortChronological(this.ventas);
-list.innerHTML = sorted.map((v, i) => `
+const unidadLabels = { 'unidad': 'Ud', 'libra': 'Lb', 'kilo': 'Kg' };
+list.innerHTML = sorted.map((v, i) => {
+const originalIndex = this.ventas.indexOf(v);
+const badgeClass = this.getProductBadgeClass(v.producto);
+const productoLabel = this.getProductLabel(v.producto);
+const unidadLabel = unidadLabels[v.unidadMedida] || v.unidadMedida;
+return `
 <tr>
 <td>${v.factura}</td>
 <td>${v.cliente}</td>
-<td>${v.cubetas}</td>
+<td><span class="product-badge ${badgeClass}">${productoLabel}</span></td>
+<td>${v.cantidad} ${unidadLabel}</td>
 <td>$${v.precio.toLocaleString('es-CO')}</td>
 <td>$${v.total.toLocaleString('es-CO')}</td>
-<td style="color:${v.debe > 0 ? 'var(--light-orange)' : 'var(--primary)'}">$${(v.debe || 0).toLocaleString('es-CO')}</td>
+<td style="color:${v.debe > 0 ? 'var(--warning-color)' : 'var(--primary)'}">$${(v.debe || 0).toLocaleString('es-CO')}</td>
 <td>${this.formatDateTime(v.fechaCompleta)}</td>
 <td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editSale(${this.ventas.indexOf(v)})">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteSale(${this.ventas.indexOf(v)})">🗑️</button>
+<button class="action-btn edit-btn" onclick="businessManager.editSale(${originalIndex})">✏️</button>
+<button class="action-btn delete-btn" onclick="businessManager.deleteSale(${originalIndex})">🗑️</button>
 <button class="action-btn download-btn" onclick="businessManager.downloadReceipt('${v.id}')">📥</button>
 </td>
 </tr>
-`).join('');
+`;
+}).join('');
 }
 renderExpenses() {
 const list = document.getElementById('gastos-lista');
@@ -1367,20 +1553,30 @@ list.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;colo
 return;
 }
 const sorted = this.sortChronological(this.gastos);
-const tipoLabels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', otros: 'Otros' };
-list.innerHTML = sorted.map((g, i) => `
+const tipoLabels = { 
+purina: 'Purina', 
+medicamento: 'Medicamento', 
+transporte: 'Transporte', 
+mantenimiento: 'Mant.', 
+alimentacion: 'Alimentación',
+otros: 'Otros' 
+};
+list.innerHTML = sorted.map((g, i) => {
+const originalIndex = this.gastos.indexOf(g);
+return `
 <tr>
 <td>${tipoLabels[g.tipo] || g.tipo}</td>
 <td>${g.descripcion || '-'}</td>
 <td style="color:var(--secondary);font-weight:bold">$${g.monto.toLocaleString('es-CO')}</td>
 <td>${this.formatDateTime(g.fechaCompleta)}</td>
 <td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editExpense(${this.gastos.indexOf(g)})">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteExpense(${this.gastos.indexOf(g)})">🗑️</button>
+<button class="action-btn edit-btn" onclick="businessManager.editExpense(${originalIndex})">✏️</button>
+<button class="action-btn delete-btn" onclick="businessManager.deleteExpense(${originalIndex})">🗑️</button>
 <button class="action-btn download-btn" onclick="businessManager.downloadExpenseReceipt('${g.id}')">📥</button>
 </td>
 </tr>
-`).join('');
+`;
+}).join('');
 }
 renderAll() {
 this.renderSales();
@@ -1388,16 +1584,24 @@ this.renderExpenses();
 this.updateSummary();
 }
 notify(msg, type = 'success') {
+const colors = {
+'success': '#4CAF50',
+'error': '#F44336',
+'expense': '#FF9800',
+'info': '#2196F3'
+};
 const n = document.createElement('div');
-n.innerHTML = `<div style="padding:12px 16px;border-radius:10px;color:white;font-weight:600;background:${type==='error'?'#f44336':'var(--primary)'};box-shadow:0 4px 12px rgba(0,0,0,0.2);position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:10000;">${msg}</div>`;
+n.className = 'notification';
+n.style.background = colors[type] || colors.success;
+n.innerHTML = msg;
 document.body.appendChild(n);
 setTimeout(() => {
 n.style.opacity = '0';
 n.style.transition = 'opacity 0.5s';
 setTimeout(() => n.remove(), 500);
-}, 2500);
+}, 3000);
 }
-// === RECEIPTS Y REPORTES (sin cambios) ===
+// === RECEIPTS Y REPORTES ===
 downloadReceipt(saleId) {
 const sale = this.ventas.find(v => v.id === saleId);
 if (!sale) return;
@@ -1409,22 +1613,33 @@ const qrContainer = document.getElementById('receipt-qr-container');
 const paymentInfo = document.getElementById('receipt-payment-info');
 receiptFactura.textContent = sale.factura;
 receiptTotal.textContent = `$${sale.total.toLocaleString('es-CO')}`;
+const unidadLabels = { 'unidad': 'unidad', 'libra': 'libra', 'kilo': 'kilo' };
+const unidadLabel = unidadLabels[sale.unidadMedida] || sale.unidadMedida;
 let detailsHTML = `
 <div class="receipt-detail"><span>Cliente:</span><span>${sale.cliente}</span></div>
-<div class="receipt-detail"><span>Cubetas:</span><span>${sale.cubetas}</span></div>
+<div class="receipt-detail"><span>Producto:</span><span>${this.getProductLabel(sale.producto)}</span></div>
+<div class="receipt-detail"><span>Cantidad:</span><span>${sale.cantidad} ${unidadLabel}</span></div>
 <div class="receipt-detail"><span>Precio unitario:</span><span>$${sale.precio.toLocaleString('es-CO')}</span></div>
 `;
+if (sale.notas && sale.notas.trim()) {
+detailsHTML += `<div class="receipt-detail"><span>Notas:</span><span>${sale.notas}</span></div>`;
+}
 if (sale.debe && sale.debe > 0) {
 detailsHTML += `<div class="receipt-detail"><span>Crédito:</span><span>$${sale.debe.toLocaleString('es-CO')}</span></div>`;
 }
 detailsHTML += `<div class="receipt-detail"><span>Fecha:</span><span>${this.formatDateTime(sale.fechaCompleta)}</span></div>`;
 receiptDetails.innerHTML = detailsHTML;
 paymentInfo.style.display = 'block';
-const qrText = `${sale.factura}\n${sale.cliente}\n$${sale.total.toLocaleString('es-CO')}\n${this.formatDateTime(sale.fechaCompleta)}`;
-const qrUrl = generateQR(qrText, 80);
-qrContainer.innerHTML = `<img src="${qrUrl}" alt="QR" style="width:80px;height:80px;display:block;margin-left:0;margin-right:auto;">`;
+const qrText = `${sale.factura}
+${sale.cliente}
+${this.getProductLabel(sale.producto)}
+${sale.cantidad} ${unidadLabel}
+$${sale.total.toLocaleString('es-CO')}
+${this.formatDateTime(sale.fechaCompleta)}`;
+const qrUrl = generateQR(qrText, 100);
+qrContainer.innerHTML = `<img src="${qrUrl}" alt="QR" style="width:100px;height:100px;">`;
 receiptTemplate.style.display = 'block';
-html2canvas(receiptTemplate, { scale: 1 }).then(canvas => {
+html2canvas(receiptTemplate, { scale: 2 }).then(canvas => {
 const pdf = new jsPDF('p', 'mm', 'a4');
 const imgData = canvas.toDataURL('image/png');
 const imgWidth = 210;
@@ -1456,7 +1671,14 @@ const paymentInfo = document.getElementById('receipt-payment-info');
 const expenseRef = `G-${expenseId.substring(0, 8)}`;
 receiptFactura.textContent = expenseRef;
 receiptTotal.textContent = `$${expense.monto.toLocaleString('es-CO')}`;
-const tipoLabels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', otros: 'Otros' };
+const tipoLabels = { 
+purina: 'Purina', 
+medicamento: 'Medicamento', 
+transporte: 'Transporte', 
+mantenimiento: 'Mantenimiento',
+alimentacion: 'Alimentación',
+otros: 'Otros' 
+};
 let detailsHTML = `
 <div class="receipt-detail"><span>Tipo:</span><span>${tipoLabels[expense.tipo] || expense.tipo}</span></div>
 <div class="receipt-detail"><span>Descripción:</span><span>${expense.descripcion || '-'}</span></div>
@@ -1466,11 +1688,13 @@ let detailsHTML = `
 receiptDetails.innerHTML = detailsHTML;
 paymentInfo.style.display = 'none';
 document.querySelector('.receipt-title').textContent = 'RECIBO DE GASTO';
-const qrText = `${expenseRef}\n$${expense.monto.toLocaleString('es-CO')}\n${this.formatDateTime(expense.fechaCompleta)}`;
-const qrUrl = generateQR(qrText, 80);
-qrContainer.innerHTML = `<div style="text-align:center;"><img src="${qrUrl}" alt="QR" style="width:80px;height:80px;"></div>`;
+const qrText = `${expenseRef}
+$${expense.monto.toLocaleString('es-CO')}
+${this.formatDateTime(expense.fechaCompleta)}`;
+const qrUrl = generateQR(qrText, 100);
+qrContainer.innerHTML = `<div style="text-align:center;"><img src="${qrUrl}" alt="QR" style="width:100px;height:100px;"></div>`;
 receiptTemplate.style.display = 'block';
-html2canvas(receiptTemplate, { scale: 1 }).then(canvas => {
+html2canvas(receiptTemplate, { scale: 2 }).then(canvas => {
 const pdf = new jsPDF('p', 'mm', 'a4');
 const imgData = canvas.toDataURL('image/png');
 const imgWidth = 210;
@@ -1493,7 +1717,7 @@ document.querySelector('.receipt-title').textContent = 'RECIBO DE VENTA';
 }
 generateFullReport() {
 if (this.ventas.length === 0 && this.gastos.length === 0) {
-return this.notify('Sin datos para PDF', 'error');
+return this.notify('No hay datos para generar el PDF', 'error');
 }
 const now = new Date();
 document.getElementById('pdf-report-date').textContent = this.formatDateTime(now.toISOString());
@@ -1511,20 +1735,26 @@ document.getElementById('pdf-balance-neto').textContent = '$' + neto.toLocaleStr
 const pdfSales = document.getElementById('pdf-sales-table');
 if (pdfSales) {
 if (this.ventas.length === 0) {
-pdfSales.innerHTML = '<tr><td colspan="7" style="text-align:center">No hay ventas</td></tr>';
+pdfSales.innerHTML = '<tr><td colspan="9" style="text-align:center">No hay ventas</td></tr>';
 } else {
 const sorted = this.sortChronological(this.ventas);
-pdfSales.innerHTML = sorted.map(v => `
+const unidadLabels = { 'unidad': 'Ud', 'libra': 'Lb', 'kilo': 'Kg' };
+pdfSales.innerHTML = sorted.map(v => {
+const unidadLabel = unidadLabels[v.unidadMedida] || v.unidadMedida;
+return `
 <tr>
 <td>${v.factura}</td>
 <td>${v.cliente}</td>
-<td>${v.cubetas}</td>
+<td>${this.getProductLabel(v.producto)}</td>
+<td>${v.cantidad} ${unidadLabel}</td>
+<td>${unidadLabel}</td>
 <td>$${v.precio.toLocaleString('es-CO')}</td>
 <td>$${v.total.toLocaleString('es-CO')}</td>
 <td>$${(v.debe || 0).toLocaleString('es-CO')}</td>
 <td>${this.formatDateTime(v.fechaCompleta)}</td>
 </tr>
-`).join('');
+`;
+}).join('');
 }
 }
 const pdfExpenses = document.getElementById('pdf-expenses-table');
@@ -1533,7 +1763,14 @@ if (this.gastos.length === 0) {
 pdfExpenses.innerHTML = '<tr><td colspan="4" style="text-align:center">No hay gastos</td></tr>';
 } else {
 const sorted = this.sortChronological(this.gastos);
-const labels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', otros: 'Otros' };
+const labels = { 
+purina: 'Purina', 
+medicamento: 'Medicamento', 
+transporte: 'Transporte', 
+mantenimiento: 'Mant.',
+alimentacion: 'Alimentación',
+otros: 'Otros' 
+};
 pdfExpenses.innerHTML = sorted.map(g => `
 <tr>
 <td>${labels[g.tipo] || g.tipo}</td>
@@ -1547,7 +1784,7 @@ pdfExpenses.innerHTML = sorted.map(g => `
 const template = document.getElementById('pdf-template');
 if (template) {
 template.style.display = 'block';
-html2canvas(template, { scale: 1 }).then(canvas => {
+html2canvas(template, { scale: 2 }).then(canvas => {
 const imgData = canvas.toDataURL('image/png');
 const pdf = new jsPDF('p', 'mm', 'a4');
 const imgWidth = 210;
@@ -1581,15 +1818,16 @@ pinButtons.forEach(btn => {
 btn.addEventListener('click', () => {
 const val = btn.dataset.value;
 const action = btn.dataset.action;
-if (action === 'clear') pinInput.value = '';
-else if (action === 'enter') {
+if (action === 'clear') {
+pinInput.value = '';
+} else if (action === 'enter') {
 if (pinInput.value === '2000') {
 document.getElementById('pin-screen').style.opacity = '0';
 setTimeout(() => {
 document.getElementById('pin-screen').style.display = 'none';
 document.getElementById('main-content').style.display = 'block';
 document.getElementById('main-content').style.opacity = '1';
-businessManager.notify('¡Bienvenido!');
+businessManager.notify('¡Bienvenido a Finca El Naranjo!');
 }, 300);
 } else {
 businessManager.notify('PIN incorrecto', 'error');
@@ -1611,65 +1849,82 @@ businessManager.saveNote();
 document.getElementById('descargar-notas')?.addEventListener('click', () => {
 businessManager.downloadAllNotes();
 });
-// Eventos de ventas y gastos (sin cambios)
+// Eventos de ventas
 document.getElementById('agregar-venta')?.addEventListener('click', () => {
 const cliente = document.getElementById('cliente')?.value.trim();
 const factura = document.getElementById('factura')?.value.trim();
-const cub = parseInt(document.getElementById('cubetas')?.value) || 0;
-const prec = parseInt(document.getElementById('precio')?.value) || 0;
+const producto = document.getElementById('producto')?.value;
+const cantidad = parseInt(document.getElementById('cantidad')?.value) || 0;
+const unidadMedida = document.getElementById('unidad-medida')?.value;
+const precio = parseInt(document.getElementById('precio')?.value) || 0;
 const fecha = document.getElementById('fecha-venta')?.value;
-const cDebe = parseInt(document.getElementById('cubetas-debe')?.value) || 0;
+const notas = document.getElementById('notas-venta')?.value.trim();
+const cDebe = parseInt(document.getElementById('cantidad-debe')?.value) || 0;
 const mDebe = parseInt(document.getElementById('monto-debe')?.value) || 0;
-if (!cliente) return businessManager.notify('Cliente requerido', 'error');
-if (!factura) return businessManager.notify('Número de factura requerido', 'error');
-if (cub <= 0) return businessManager.notify('Cubetas > 0', 'error');
-if (prec <= 0) return businessManager.notify('Precio > 0', 'error');
-if (!fecha) return businessManager.notify('Fecha y hora requeridas', 'error');
-const total = cub * prec;
+if (!cliente) return businessManager.notify('Cliente es requerido', 'error');
+if (!producto) return businessManager.notify('Seleccione un producto', 'error');
+if (cantidad <= 0) return businessManager.notify('Cantidad debe ser mayor a 0', 'error');
+if (precio <= 0) return businessManager.notify('Precio debe ser mayor a 0', 'error');
+if (!fecha) return businessManager.notify('Fecha y hora son requeridas', 'error');
+const total = cantidad * precio;
 let debe = 0;
 if (mDebe > 0) {
-if (mDebe > total) return businessManager.notify('Crédito ≤ total', 'error');
+if (mDebe > total) return businessManager.notify('Crédito no puede ser mayor al total', 'error');
 debe = mDebe;
 } else if (cDebe > 0) {
-if (cDebe > cub) return businessManager.notify('Cub. crédito ≤ vendidas', 'error');
-debe = cDebe * prec;
+if (cDebe > cantidad) return businessManager.notify('Cantidad a crédito no puede ser mayor a la vendida', 'error');
+debe = cDebe * precio;
 }
 const data = {
 cliente,
 factura,
-cubetas: cub,
-precio: prec,
+producto,
+cantidad,
+unidadMedida,
+precio,
 total,
 debe,
+notas,
 fechaCompleta: new Date(fecha).toISOString()
 };
 if (businessManager.currentEditSale !== undefined) {
 businessManager.updateSale(businessManager.currentEditSale, data);
 businessManager.currentEditSale = undefined;
+document.getElementById('agregar-venta').textContent = '➕ Agregar Venta';
 } else {
 businessManager.addSale(data);
 }
 document.getElementById('cliente').value = '';
-document.getElementById('factura').value = '';
+document.getElementById('producto').value = '';
 businessManager.updateFacturaInput();
-document.getElementById('cubetas').value = '1';
-document.getElementById('precio').value = '5000';
-document.getElementById('cubetas-debe').value = '0';
+document.getElementById('cantidad').value = '1';
+document.getElementById('unidad-medida').value = 'unidad';
+document.getElementById('precio').value = '10000';
+document.getElementById('notas-venta').value = '';
+document.getElementById('cantidad-debe').value = '0';
 document.getElementById('monto-debe').value = '0';
 document.getElementById('fecha-venta').value = new Date().toISOString().slice(0, 16);
 });
+// Eventos de gastos
 document.getElementById('agregar-gasto')?.addEventListener('click', () => {
 const tipo = document.getElementById('tipo-gasto')?.value;
 const desc = document.getElementById('descripcion-gasto')?.value;
 const monto = parseInt(document.getElementById('monto-gasto')?.value) || 0;
 const fecha = document.getElementById('fecha-gasto')?.value;
-if (!tipo) return businessManager.notify('Seleccione tipo', 'error');
-if (!monto || monto <= 0) return businessManager.notify('Monto > 0', 'error');
-if (!fecha) return businessManager.notify('Fecha y hora requeridas', 'error');
-const data = { tipo, descripcion: desc, monto, fechaCompleta: new Date(fecha).toISOString() };
+if (!tipo) return businessManager.notify('Seleccione tipo de gasto', 'error');
+if (!desc.trim()) return businessManager.notify('Descripción es requerida', 'error');
+if (!monto || monto <= 0) return businessManager.notify('Monto debe ser mayor a 0', 'error');
+if (!fecha) return businessManager.notify('Fecha y hora son requeridas', 'error');
+const data = { 
+tipo, 
+descripcion: desc, 
+monto, 
+fechaCompleta: new Date(fecha).toISOString() 
+};
 if (businessManager.currentEditExpense !== undefined) {
 businessManager.updateExpense(businessManager.currentEditExpense, data);
 businessManager.currentEditExpense = undefined;
+document.getElementById('agregar-gasto').textContent = '➕ Registrar Gasto';
 } else {
 businessManager.addExpense(data);
 }
@@ -1689,26 +1944,49 @@ if (ventas.length === 0 && gastos.length === 0 && notas.length === 0) {
 await db.saveVenta({
 id: 'demo1',
 cliente: "Carnes Don Juan",
-cubetas: 10,
-precio: 5000,
-total: 50000,
+producto: "pollo-criollo",
+cantidad: 5,
+unidadMedida: "unidad",
+precio: 15000,
+total: 75000,
 debe: 0,
+notas: "Entrega programada para el sábado",
 fechaCompleta: new Date(2026, 0, 20, 9, 30).toISOString(),
 factura: "F-0001"
 });
-await db.saveGasto({
+await db.saveVenta({
 id: 'demo2',
+cliente: "Quesos La Finca",
+producto: "cuajada",
+cantidad: 10,
+unidadMedida: "libra",
+precio: 3000,
+total: 30000,
+debe: 15000,
+notas: "Cliente frecuente, paga la mitad al contado",
+fechaCompleta: new Date(2026, 0, 21, 14, 15).toISOString(),
+factura: "F-0002"
+});
+await db.saveGasto({
+id: 'demo3',
 tipo: "purina",
-descripcion: "Bulto 40kg",
+descripcion: "Bulto de purina 40kg para pollos",
 monto: 85000,
 fechaCompleta: new Date(2026, 0, 19, 11, 20).toISOString()
 });
+await db.saveGasto({
+id: 'demo4',
+tipo: "medicamento",
+descripcion: "Vacunas para pollos criollos",
+monto: 45000,
+fechaCompleta: new Date(2026, 0, 22, 10, 0).toISOString()
+});
 await db.saveNota({
 id: 'demo-note1',
-texto: "Recordar comprar más bolsas para pollo.",
+texto: "Recordar comprar más bolsas para pollo y verificar stock de cuajada para la próxima semana.",
 fechaRegistro: new Date(2026, 0, 21, 10, 0).toISOString()
 });
-await db.updateNextFacturaNumber(2);
+await db.updateNextFacturaNumber(3);
 businessManager.loadData();
 businessManager.loadNextFacturaNumber();
 }
@@ -1716,4 +1994,3 @@ businessManager.loadNextFacturaNumber();
 </script>
 </body>
 </html>
-
