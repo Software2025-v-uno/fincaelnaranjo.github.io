@@ -377,6 +377,24 @@ margin: 16px 0;
 background: white;
 box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
+.search-bar {
+margin-bottom: 16px;
+display: flex;
+gap: 10px;
+}
+.search-input {
+flex: 1;
+padding: 12px 16px;
+border: 1.5px solid #E0E0E0;
+border-radius: 10px;
+font-size: 1rem;
+transition: all 0.3s ease;
+}
+.search-input:focus {
+outline: none;
+border-color: var(--primary);
+box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.2);
+}
 .sales-table, .expenses-table, .notes-table {
 width: 100%;
 border-collapse: collapse;
@@ -762,8 +780,8 @@ color: var(--black);
 <input type="text" id="cliente" placeholder="Nombre del cliente" required>
 </div>
 <div class="form-group">
-<label for="factura">N° Factura *</label>
-<input type="text" id="factura" placeholder="F-0001" readonly>
+<label for="factura">N° Recibo *</label>
+<input type="text" id="factura" placeholder="R-0001" readonly>
 </div>
 <div class="form-group">
 <label for="producto">Producto *</label>
@@ -900,11 +918,14 @@ color: var(--black);
 </div>
 <div class="card">
 <h2 class="card-title">📋 Ventas Registradas</h2>
+<div class="search-bar">
+<input type="text" id="search-ventas" class="search-input" placeholder="🔍 Buscar por cliente, producto o recibo...">
+</div>
 <div class="table-container">
 <table class="sales-table">
 <thead>
 <tr>
-<th>Factura</th>
+<th>Recibo</th>
 <th>Cliente</th>
 <th>Producto</th>
 <th>Cantidad</th>
@@ -923,6 +944,9 @@ color: var(--black);
 </div>
 <div class="card">
 <h2 class="card-title">🧾 Gastos Registrados</h2>
+<div class="search-bar">
+<input type="text" id="search-gastos" class="search-input" placeholder="🔍 Buscar por tipo o descripción...">
+</div>
 <div class="table-container">
 <table class="expenses-table">
 <thead>
@@ -943,7 +967,7 @@ color: var(--black);
 <div class="footer">
 <p>Finca El Naranjo &copy; 2026 | Sistema Integral de Gestión</p>
 <p style="margin-top:4px;font-size:0.8rem">Productos: Pollo Criollo, Semicriollo, Cuajada y Queso</p>
-<p style="margin-top:4px;font-size:0.8rem">Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
+<p style="margin-top:4px;font-size:0.8rem">Tel: 3023844588 para pagos Nequi o Daviplata</p>
 </div>
 </div>
 <!-- PDF Template -->
@@ -967,7 +991,7 @@ color: var(--black);
 </div>
 <h3 style="margin:25px 0 15px;color:var(--black);font-size:18px;">Ventas Registradas</h3>
 <table class="pdf-table">
-<thead><tr><th>Factura</th><th>Cliente</th><th>Producto</th><th>Cantidad</th><th>Unidad</th><th>P. Unitario</th><th>Total</th><th>Debe</th><th>Fecha</th></tr></thead>
+<thead><tr><th>Recibo</th><th>Cliente</th><th>Producto</th><th>Cantidad</th><th>Unidad</th><th>P. Unitario</th><th>Total</th><th>Debe</th><th>Fecha</th></tr></thead>
 <tbody id="pdf-sales-table"><tr><td colspan="9" style="text-align:center">No hay ventas</td></tr></tbody>
 </table>
 <h3 style="margin:25px 0 15px;color:var(--warning-color);font-size:18px;">Gastos Registrados</h3>
@@ -981,7 +1005,7 @@ color: var(--black);
 <div style="margin-top:40px;text-align:center">
 <p style="color:var(--black);font-weight:bold">¡Gracias por su confianza!</p>
 <p>Control total de su negocio agropecuario</p>
-<p style="margin-top:10px;font-size:14px;color:#666">Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
+<p style="margin-top:10px;font-size:14px;color:#666">Tel: 3023844588 | Nequi o Daviplata</p>
 <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; text-align: center;">
 <p style="font-size: 10px; color: #999; font-style: italic;">Reporte generado a partir de los registros de gestión.</p>
 </div>
@@ -993,7 +1017,7 @@ color: var(--black);
 <div class="receipt-logo"></div>
 <h2 class="receipt-title">RECIBO DE VENTA</h2>
 <p class="receipt-subtitle">Finca El Naranjo</p>
-<div class="receipt-factura" id="receipt-factura">F-0001</div>
+<div class="receipt-factura" id="receipt-factura">R-0001</div>
 </div>
 <div class="receipt-details" id="receipt-details">
 <!-- Detalles dinámicos -->
@@ -1006,9 +1030,9 @@ una factura de venta ni documento equivalente según el Estatuto Tributario.
 </div>
 <div id="receipt-payment-info" class="receipt-footer" style="margin-top:16px;display:none;">
 <p style="font-size: 10px; color: #999; font-style: italic;">Para realizar el pago de su compra, puede hacerlo</p>
-<p style="font-size: 10px; color: #999; font-style: italic;">por transferencia vía Nequi al número:</p>
-<p style="font-size: 10px; color: #999; font-style: italic;">314 4361405</p>
-<p>Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
+<p style="font-size: 10px; color: #999; font-style: italic;">por transferencia vía Nequi o Daviplata al número:</p>
+<p style="font-size: 10px; color: #999; font-style: italic; font-weight: bold;">3023844588</p>
+<p>elnaranjofincaagropecuaria@gmail.com</p>
 <p>Gracias por su compra</p>
 </div>
 <div class="receipt-footer" style="margin-top:12px;">
@@ -1026,7 +1050,7 @@ this.init();
 }
 init() {
 return new Promise((resolve, reject) => {
-const req = indexedDB.open('FincaElNaranjoDB', 4);
+const req = indexedDB.open('FincaElNaranjoDB', 5);
 req.onerror = () => reject(req.error);
 req.onsuccess = () => {
 this.db = req.result;
@@ -1045,17 +1069,17 @@ db.createObjectStore('notas', { keyPath: 'id' });
 }
 if (!db.objectStoreNames.contains('metadata')) {
 const metaStore = db.createObjectStore('metadata', { keyPath: 'key' });
-metaStore.put({ key: 'nextFacturaNumber', value: 1 });
+metaStore.put({ key: 'nextReciboNumber', value: 1 });
 }
 };
 });
 }
-async getNextFacturaNumber() {
+async getNextReciboNumber() {
 await this.init();
 return new Promise((resolve, reject) => {
 const tx = this.db.transaction(['metadata'], 'readonly');
 const store = tx.objectStore('metadata');
-const req = store.get('nextFacturaNumber');
+const req = store.get('nextReciboNumber');
 req.onsuccess = () => {
 const nextNum = req.result ? req.result.value : 1;
 resolve(nextNum);
@@ -1063,12 +1087,12 @@ resolve(nextNum);
 req.onerror = () => reject(req.error);
 });
 }
-async updateNextFacturaNumber(nextNum) {
+async updateNextReciboNumber(nextNum) {
 await this.init();
 return new Promise((resolve, reject) => {
 const tx = this.db.transaction(['metadata'], 'readwrite');
 const store = tx.objectStore('metadata');
-const req = store.put({ key: 'nextFacturaNumber', value: nextNum });
+const req = store.put({ key: 'nextReciboNumber', value: nextNum });
 req.onsuccess = () => resolve();
 req.onerror = () => reject(req.error);
 });
@@ -1202,14 +1226,15 @@ this.notas = [];
 this.currentEditSale = undefined;
 this.currentEditExpense = undefined;
 this.currentEditNote = undefined;
-this.nextFacturaNumber = 1;
+this.nextReciboNumber = 1;
 this.lastGeneratedReceipt = null;
 this.init();
 }
 init() {
 this.loadData();
 this.setTodayDates();
-this.loadNextFacturaNumber();
+this.loadNextReciboNumber();
+this.setupSearchListeners();
 }
 setTodayDates() {
 const now = new Date();
@@ -1251,16 +1276,16 @@ return classes[producto] || 'otros';
 sortChronological(arr) {
 return [...arr].sort((a, b) => new Date(a.fechaCompleta || a.fechaRegistro) - new Date(b.fechaCompleta || b.fechaRegistro));
 }
-async loadNextFacturaNumber() {
+async loadNextReciboNumber() {
 try {
-this.nextFacturaNumber = await db.getNextFacturaNumber();
-this.updateFacturaInput();
+this.nextReciboNumber = await db.getNextReciboNumber();
+this.updateReciboInput();
 } catch (e) {
-console.error('Error cargando número de factura:', e);
+console.error('Error cargando número de recibo:', e);
 }
 }
-updateFacturaInput() {
-document.getElementById('factura').value = `F-${String(this.nextFacturaNumber).padStart(4, '0')}`;
+updateReciboInput() {
+document.getElementById('factura').value = `R-${String(this.nextReciboNumber).padStart(4, '0')}`;
 }
 async loadData() {
 try {
@@ -1273,6 +1298,95 @@ this.renderNotes();
 } catch (e) {
 console.error('Error cargando datos:', e);
 }
+}
+setupSearchListeners() {
+document.getElementById('search-ventas')?.addEventListener('input', (e) => {
+this.filterVentas(e.target.value);
+});
+document.getElementById('search-gastos')?.addEventListener('input', (e) => {
+this.filterGastos(e.target.value);
+});
+}
+filterVentas(query) {
+if (!query.trim()) {
+this.renderSales();
+return;
+}
+const filtered = this.ventas.filter(v => 
+v.cliente.toLowerCase().includes(query.toLowerCase()) ||
+this.getProductLabel(v.producto).toLowerCase().includes(query.toLowerCase()) ||
+v.factura.toLowerCase().includes(query.toLowerCase())
+);
+const list = document.getElementById('ventas-lista');
+if (filtered.length === 0) {
+list.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--gray)">No se encontraron resultados</td></tr>`;
+return;
+}
+const sorted = this.sortChronological(filtered);
+const unidadLabels = { 'unidad': 'Ud', 'libra': 'Lb', 'kilo': 'Kg' };
+list.innerHTML = sorted.map((v, i) => {
+const originalIndex = this.ventas.indexOf(v);
+const badgeClass = this.getProductBadgeClass(v.producto);
+const productoLabel = this.getProductLabel(v.producto);
+const unidadLabel = unidadLabels[v.unidadMedida] || v.unidadMedida;
+return `
+<tr>
+<td>${v.factura}</td>
+<td>${v.cliente}</td>
+<td><span class="product-badge ${badgeClass}">${productoLabel}</span></td>
+<td>${v.cantidad} ${unidadLabel}</td>
+<td>$${v.precio.toLocaleString('es-CO')}</td>
+<td>$${v.total.toLocaleString('es-CO')}</td>
+<td style="color:${v.debe > 0 ? 'var(--warning-color)' : 'var(--primary)'}">$${(v.debe || 0).toLocaleString('es-CO')}</td>
+<td>${this.formatDateTime(v.fechaCompleta)}</td>
+<td class="actions">
+<button class="action-btn edit-btn" onclick="businessManager.editSale(${originalIndex})">✏️</button>
+<button class="action-btn delete-btn" onclick="businessManager.deleteSale(${originalIndex})">🗑️</button>
+<button class="action-btn download-btn" onclick="businessManager.downloadReceipt('${v.id}')">📥</button>
+</td>
+</tr>
+`;
+}).join('');
+}
+filterGastos(query) {
+if (!query.trim()) {
+this.renderExpenses();
+return;
+}
+const filtered = this.gastos.filter(g => 
+g.tipo.toLowerCase().includes(query.toLowerCase()) ||
+g.descripcion.toLowerCase().includes(query.toLowerCase())
+);
+const list = document.getElementById('gastos-lista');
+if (filtered.length === 0) {
+list.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray)">No se encontraron resultados</td></tr>`;
+return;
+}
+const sorted = this.sortChronological(filtered);
+const tipoLabels = { 
+purina: 'Purina', 
+medicamento: 'Medicamento', 
+transporte: 'Transporte', 
+mantenimiento: 'Mant.', 
+alimentacion: 'Alimentación',
+otros: 'Otros' 
+};
+list.innerHTML = sorted.map((g, i) => {
+const originalIndex = this.gastos.indexOf(g);
+return `
+<tr>
+<td>${tipoLabels[g.tipo] || g.tipo}</td>
+<td>${g.descripcion || '-'}</td>
+<td style="color:var(--secondary);font-weight:bold">$${g.monto.toLocaleString('es-CO')}</td>
+<td>${this.formatDateTime(g.fechaCompleta)}</td>
+<td class="actions">
+<button class="action-btn edit-btn" onclick="businessManager.editExpense(${originalIndex})">✏️</button>
+<button class="action-btn delete-btn" onclick="businessManager.deleteExpense(${originalIndex})">🗑️</button>
+<button class="action-btn download-btn" onclick="businessManager.downloadExpenseReceipt('${g.id}')">📥</button>
+</td>
+</tr>
+`;
+}).join('');
 }
 // === NOTAS ===
 addNote(texto) {
@@ -1347,15 +1461,25 @@ if (this.notas.length === 0) return this.notify('No hay notas para descargar', '
 const doc = new jsPDF();
 let y = 20;
 doc.setFontSize(16);
-doc.text('Blog de Notas - Finca El Naranjo', 10, y);
+doc.setTextColor(255, 111, 0);
+doc.setFillColor(255, 248, 240);
+doc.rect(0, 0, 210, 297, 'F');
+doc.setTextColor(0);
+doc.text('Blog de Notas - Finca El Naranjo', 105, y, null, null, 'center');
 y += 15;
 doc.setFontSize(12);
-this.notas.forEach(note => {
+doc.setTextColor(0);
+this.notas.forEach((note, index) => {
 if (y > 280) {
 doc.addPage();
 y = 20;
 }
+if (index % 2 === 0) {
+doc.setFillColor(255, 224, 178);
+doc.rect(0, y - 5, 210, 25, 'F');
+}
 const dateText = `${new Date(note.fechaRegistro).toLocaleString('es-CO')}:`;
+doc.setTextColor(0);
 doc.text(dateText, 10, y);
 y += 8;
 const lines = doc.splitTextToSize(note.texto, 190);
@@ -1367,7 +1491,7 @@ this.notify('Notas descargadas exitosamente');
 }
 // === VENTAS ===
 addSale(data) {
-let factura = data.factura || `F-${String(this.nextFacturaNumber).padStart(4, '0')}`;
+let recibo = data.factura || `R-${String(this.nextReciboNumber).padStart(4, '0')}`;
 db.saveVenta({
 id: Date.now() + '-' + Math.random().toString(36).substr(2, 5),
 cliente: data.cliente.trim(),
@@ -1379,14 +1503,14 @@ total: data.total,
 debe: data.debe || 0,
 notas: data.notas || '',
 fechaCompleta: data.fechaCompleta,
-factura: factura
+factura: recibo
 }).then(() => {
 if (!data.factura) {
-this.nextFacturaNumber++;
-db.updateNextFacturaNumber(this.nextFacturaNumber);
+this.nextReciboNumber++;
+db.updateNextReciboNumber(this.nextReciboNumber);
 }
 this.loadData();
-this.updateFacturaInput();
+this.updateReciboInput();
 this.notify('Venta guardada exitosamente');
 }).catch(err => {
 console.error('Error guardando venta:', err);
@@ -1419,13 +1543,40 @@ this.notify('Error al actualizar', 'error');
 deleteSale(index) {
 const v = this.ventas[index];
 if (!v) return;
+const deletedRecibo = v.factura;
 db.deleteVenta(v.id).then(() => {
+this.renumberRecibosAfter(deletedRecibo);
 this.loadData();
 this.notify('Venta eliminada correctamente');
 }).catch(err => {
 console.error('Error eliminando venta:', err);
 this.notify('Error al eliminar', 'error');
 });
+}
+renumberRecibosAfter(deletedReciboNumber) {
+const deletedNum = parseInt(deletedReciboNumber.split('-')[1]);
+const ventasAfter = this.ventas.filter(v => {
+const num = parseInt(v.factura.split('-')[1]);
+return num > deletedNum;
+}).sort((a, b) => {
+return parseInt(a.factura.split('-')[1]) - parseInt(b.factura.split('-')[1]);
+});
+if (ventasAfter.length > 0) {
+db.getAllVentas().then(allVentas => {
+const tx = db.db.transaction(['ventas'], 'readwrite');
+const store = tx.objectStore('ventas');
+ventasAfter.forEach((v, idx) => {
+const venta = allVentas.find(av => av.id === v.id);
+if (venta) {
+const newNumber = deletedNum + idx;
+venta.factura = `R-${String(newNumber).padStart(4, '0')}`;
+store.put(venta);
+}
+});
+});
+this.nextReciboNumber = deletedNum;
+db.updateNextReciboNumber(this.nextReciboNumber);
+}
 }
 editSale(index) {
 const v = this.ventas[index];
@@ -1818,9 +1969,8 @@ pinButtons.forEach(btn => {
 btn.addEventListener('click', () => {
 const val = btn.dataset.value;
 const action = btn.dataset.action;
-if (action === 'clear') {
-pinInput.value = '';
-} else if (action === 'enter') {
+if (action === 'clear') pinInput.value = '';
+else if (action === 'enter') {
 if (pinInput.value === '2000') {
 document.getElementById('pin-screen').style.opacity = '0';
 setTimeout(() => {
@@ -1896,7 +2046,7 @@ businessManager.addSale(data);
 }
 document.getElementById('cliente').value = '';
 document.getElementById('producto').value = '';
-businessManager.updateFacturaInput();
+businessManager.updateReciboInput();
 document.getElementById('cantidad').value = '1';
 document.getElementById('unidad-medida').value = 'unidad';
 document.getElementById('precio').value = '10000';
@@ -1952,7 +2102,7 @@ total: 75000,
 debe: 0,
 notas: "Entrega programada para el sábado",
 fechaCompleta: new Date(2026, 0, 20, 9, 30).toISOString(),
-factura: "F-0001"
+factura: "R-0001"
 });
 await db.saveVenta({
 id: 'demo2',
@@ -1965,7 +2115,7 @@ total: 30000,
 debe: 15000,
 notas: "Cliente frecuente, paga la mitad al contado",
 fechaCompleta: new Date(2026, 0, 21, 14, 15).toISOString(),
-factura: "F-0002"
+factura: "R-0002"
 });
 await db.saveGasto({
 id: 'demo3',
@@ -1986,9 +2136,9 @@ id: 'demo-note1',
 texto: "Recordar comprar más bolsas para pollo y verificar stock de cuajada para la próxima semana.",
 fechaRegistro: new Date(2026, 0, 21, 10, 0).toISOString()
 });
-await db.updateNextFacturaNumber(3);
+await db.updateNextReciboNumber(3);
 businessManager.loadData();
-businessManager.loadNextFacturaNumber();
+businessManager.loadNextReciboNumber();
 }
 }, 300);
 </script>
