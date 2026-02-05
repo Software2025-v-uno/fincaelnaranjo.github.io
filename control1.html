@@ -1,981 +1,1353 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#FF6F00" />
-  <title>Control Interno | Finca El Naranjo</title>
-  <link rel="icon" href="img/logo.png" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #FF6F00;
-      --secondary: #E65100;
-      --light-orange: #FFB74D;
-      --dark-orange: #D84315;
-      --white: #FFFFFF;
-      --gray: #616161;
-      --light-bg: #FFF8F0;
-      --medium-bg: #FFE0B2;
-      --dark-bg: #FFB300;
-      --share-bg: #f8f9fa;
-      --share-border: #e9ecef;
-      --card-bg: rgba(255, 255, 255, 0.95);
-      --border-color: rgba(0, 0, 0, 0.1);
-      --accent: #FFD700;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    body {
-      background: linear-gradient(135deg, var(--light-bg) 0%, var(--medium-bg) 50%, var(--dark-bg) 100%);
-      min-height: 100vh;
-      padding: 12px;
-      color: #333;
-      transition: all 0.3s ease;
-    }
-    
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    
-    /* Authentication Screen */
-    .auth-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      position: relative;
-      z-index: 10;
-    }
-    
-    .auth-card {
-      background: var(--card-bg);
-      border-radius: 24px;
-      padding: 40px;
-      width: 94%;
-      max-width: 480px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-      position: relative;
-      overflow: hidden;
-      animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-color);
-    }
-    
-    .auth-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
-    }
-    
-    .logo-container {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    
-    .logo {
-      width: 120px;
-      height: 120px;
-      background: url('img/logo.png') center/contain no-repeat;
-      border-radius: 50%;
-      margin: 0 auto 20px;
-      border: 3px solid var(--primary);
-      box-shadow: 0 8px 25px rgba(255, 111, 0, 0.3);
-    }
-    
-    .auth-title {
-      font-size: 2.2rem;
-      color: var(--black);
-      margin-bottom: 12px;
-      font-weight: 800;
-      text-align: center;
-      background: linear-gradient(45deg, var(--black), var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .auth-subtitle {
-      color: var(--gray);
-      margin-bottom: 28px;
-      font-size: 1.1rem;
-      text-align: center;
-      font-weight: 500;
-    }
-    
-    .form-group {
-      margin-bottom: 24px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: 700;
-      color: var(--black);
-      font-size: 1.05rem;
-    }
-    
-    input {
-      width: 100%;
-      padding: 16px;
-      border: 2px solid var(--light-orange);
-      border-radius: 14px;
-      font-size: 1.1rem;
-      transition: all 0.3s ease;
-      background-color: white;
-      font-weight: 500;
-    }
-    
-    input:focus {
-      outline: none;
-      border-color: var(--secondary);
-      box-shadow: 0 0 0 4px rgba(230, 81, 0, 0.25);
-    }
-    
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      border: none;
-      border-radius: 14px;
-      font-size: 1.2rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      box-shadow: 0 6px 15px rgba(255, 111, 0, 0.4);
-      touch-action: manipulation;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(216, 67, 21, 0.5);
-    }
-    
-    .btn:active {
-      transform: translateY(0);
-    }
-    
-    .captcha-container {
-      background: var(--light-bg);
-      padding: 20px;
-      border-radius: 14px;
-      margin: 24px 0;
-      text-align: center;
-      border: 2px dashed var(--light-orange);
-    }
-    
-    .captcha-text {
-      font-size: 2.2rem;
-      font-weight: bold;
-      letter-spacing: 8px;
-      margin: 12px 0;
-      color: var(--black);
-      font-family: 'Courier New', monospace;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .captcha-input {
-      width: 100%;
-      padding: 14px;
-      text-align: center;
-      font-size: 1.3rem;
-      margin-top: 12px;
-      border-radius: 12px;
-      border: 2px solid var(--light-orange);
-    }
-    
-    /* Main Content */
-    #main-content {
-      display: none;
-    }
-    
-    header {
-      text-align: center;
-      margin-bottom: 24px;
-      padding: 20px;
-      background: var(--card-bg);
-      border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-color);
-    }
-    
-    nav {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-      margin-bottom: 28px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-color);
-    }
-    
-    select, input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      margin: 0;
-      border: 2px solid var(--light-orange);
-      border-radius: 12px;
-      font-size: 1rem;
-      background: white;
-      transition: all 0.3s ease;
-      font-weight: 500;
-    }
-    
-    select:focus, input[type="text"]:focus {
-      outline: none;
-      border-color: var(--secondary);
-      box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
-    }
-    
-    .btn-modern {
-      width: 100% !important;
-      padding: 14px 20px !important;
-      font-size: 1.05rem !important;
-      border-radius: 12px !important;
-      background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
-      color: white !important;
-      font-weight: 700 !important;
-      cursor: pointer !important;
-      border: none !important;
-      box-shadow: 0 4px 12px rgba(255, 111, 0, 0.35) !important;
-      transition: all 0.3s ease !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 10px !important;
-    }
-    
-    .btn-modern:hover {
-      transform: translateY(-3px) !important;
-      box-shadow: 0 6px 16px rgba(216, 67, 21, 0.45) !important;
-    }
-    
-    .results {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-      margin-top: 16px;
-      max-height: 500px;
-      overflow-y: auto;
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-color);
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 16px;
-    }
-    
-    th, td {
-      padding: 14px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-    
-    th {
-      background: linear-gradient(135deg, var(--light-orange), var(--primary));
-      color: white;
-      font-weight: 700;
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      letter-spacing: 0.5px;
-    }
-    
-    footer {
-      text-align: center;
-      margin-top: 28px;
-      padding: 16px;
-      color: var(--gray);
-      font-size: 0.95rem;
-      font-weight: 500;
-    }
-    
-    #receipt-template {
-      display: none;
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      padding: 30px;
-      font-family: Arial, sans-serif;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    
-    .receipt-qr-container {
-      text-align: center;
-      margin-top: 24px;
-    }
-    
-    @keyframes slideIn {
-      from { transform: translateY(-20px) scale(0.95); opacity: 0; }
-      to { transform: translateY(0) scale(1); opacity: 1; }
-    }
-    
-    .notification {
-      position: fixed;
-      top: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 16px 28px;
-      border-radius: 14px;
-      color: white;
-      font-weight: 700;
-      font-size: 1.1rem;
-      z-index: 10000;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-      animation: fadeIn 0.3s, fadeOut 0.3s 2.7s forwards;
-    }
-    
-    @keyframes fadeOut {
-      to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-    }
-    
-    .error { 
-      background: linear-gradient(135deg, #f44336, #d32f2f); 
-    }
-    
-    .success { 
-      background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-    }
-    
-    /* Dashboard Styles */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-      margin-bottom: 28px;
-    }
-    
-    .stat-card {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-color);
-    }
-    
-    .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
-    }
-    
-    .stat-info h3 {
-      font-size: 1rem;
-      color: var(--gray);
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    
-    .stat-info p {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: var(--black);
-      background: linear-gradient(45deg, var(--black), var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .stat-icon {
-      width: 60px;
-      height: 60px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      color: white;
-      box-shadow: 0 6px 15px rgba(255, 111, 0, 0.4);
-    }
-    
-    .section-title {
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin-bottom: 24px;
-      color: var(--black);
-      text-align: center;
-      background: linear-gradient(45deg, var(--black), var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    .analytics-container {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 28px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-      margin-bottom: 28px;
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border-color);
-    }
-    
-    .chart-placeholder {
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      border-radius: 16px;
-      margin-top: 16px;
-      color: var(--gray);
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-    
-    .chart-placeholder i {
-      font-size: 3rem;
-      margin-right: 16px;
-      color: var(--primary);
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .auth-card {
-        padding: 24px;
-      }
-      
-      .auth-title {
-        font-size: 1.8rem;
-      }
-      
-      .logo {
-        width: 90px;
-        height: 90px;
-      }
-      
-      nav {
-        grid-template-columns: 1fr;
-      }
-      
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#FF6F00" />
+<title>Control Interno | Finca El Naranjo</title>
+<link rel="icon" href="img/logo.png" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+--primary: #FF6F00;
+--secondary: #E65100;
+--light-orange: #FFB74D;
+--dark-orange: #D84315;
+--expense-color: #FF9800;
+--white: #FFFFFF;
+--gray: #616161;
+--light-bg: #FFF8F0;
+--medium-bg: #FFE0B2;
+--dark-bg: #FFB300;
+--share-bg: #f8f9fa;
+--share-border: #e9ecef;
+--card-bg: rgba(255, 255, 255, 0.95);
+--border-color: rgba(0, 0, 0, 0.1);
+--border-radius: 20px;
+--box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+--transition: all 0.3s ease;
+--accent: #FFD700;
+}
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+-webkit-tap-highlight-color: transparent;
+}
+body {
+background: linear-gradient(135deg, var(--light-bg) 0%, var(--medium-bg) 50%, var(--dark-bg) 100%);
+min-height: 100vh;
+padding: 12px;
+color: #333;
+transition: var(--transition);
+}
+.container {
+max-width: 1400px;
+margin: 0 auto;
+}
+/* Authentication Screen */
+.auth-container {
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+position: relative;
+z-index: 10;
+background: linear-gradient(135deg, #FFF8F0 0%, #FFE0B2 50%, #FFB300 100%);
+}
+.auth-card {
+background: var(--card-bg);
+border-radius: var(--border-radius);
+padding: 40px;
+width: 94%;
+max-width: 480px;
+box-shadow: var(--box-shadow);
+position: relative;
+overflow: hidden;
+animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+backdrop-filter: blur(10px);
+border: 1px solid var(--border-color);
+}
+.auth-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 5px;
+background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+}
+.logo-container {
+text-align: center;
+margin-bottom: 28px;
+}
+.logo {
+width: 120px;
+height: 120px;
+background: url('img/logo.png');
+background-size: contain;
+background-position: center;
+background-repeat: no-repeat;
+border-radius: 50%;
+margin: 0 auto 20px;
+border: 3px solid var(--primary);
+box-shadow: 0 8px 25px rgba(255, 111, 0, 0.3);
+position: relative;
+overflow: hidden;
+}
+.logo::after {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+transform: rotate(30deg);
+}
+.auth-title {
+font-size: 2.2rem;
+color: var(--dark-orange);
+margin-bottom: 12px;
+font-weight: 800;
+text-align: center;
+background: linear-gradient(45deg, var(--dark-orange), var(--primary));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+position: relative;
+}
+.auth-title::after {
+content: '';
+position: absolute;
+bottom: -8px;
+left: 50%;
+transform: translateX(-50%);
+width: 70%;
+height: 3px;
+background: linear-gradient(90deg, var(--secondary), var(--primary));
+border-radius: 2px;
+}
+.auth-subtitle {
+color: var(--gray);
+margin-bottom: 28px;
+font-size: 1.1rem;
+text-align: center;
+font-weight: 500;
+line-height: 1.5;
+}
+.form-group {
+margin-bottom: 24px;
+}
+label {
+display: block;
+margin-bottom: 10px;
+font-weight: 700;
+color: var(--dark-orange);
+font-size: 1.05rem;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+label i {
+color: var(--primary);
+font-size: 1.2rem;
+}
+input {
+width: 100%;
+padding: 16px;
+border: 2px solid var(--light-orange);
+border-radius: 14px;
+font-size: 1.1rem;
+transition: var(--transition);
+background-color: white;
+font-weight: 500;
+}
+input:focus {
+outline: none;
+border-color: var(--secondary);
+box-shadow: 0 0 0 4px rgba(230, 81, 0, 0.25);
+}
+.btn {
+display: block;
+width: 100%;
+padding: 16px;
+background: linear-gradient(135deg, var(--accent), #E6B800);
+color: var(--black);
+border: none;
+border-radius: 14px;
+font-size: 1.2rem;
+font-weight: 700;
+cursor: pointer;
+transition: var(--transition);
+text-align: center;
+box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+touch-action: manipulation;
+position: relative;
+overflow: hidden;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+}
+.btn::after {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(135deg, #E6B800, #BF9000);
+opacity: 0;
+transition: opacity 0.2s;
+z-index: -1;
+}
+.btn:hover::after {
+opacity: 1;
+}
+.btn:hover {
+transform: translateY(-3px);
+box-shadow: 0 8px 20px rgba(230, 184, 0, 0.5);
+}
+.btn:active {
+transform: translateY(0);
+}
+.btn-expense {
+background: linear-gradient(135deg, var(--expense-color), #E65100);
+box-shadow: 0 6px 15px rgba(255, 152, 0, 0.4);
+}
+.btn-expense:hover {
+box-shadow: 0 8px 20px rgba(230, 81, 0, 0.5);
+background: linear-gradient(135deg, #E65100, #BF360C);
+}
+.captcha-container {
+background: var(--light-bg);
+padding: 20px;
+border-radius: 14px;
+margin: 24px 0;
+text-align: center;
+border: 2px dashed var(--light-orange);
+position: relative;
+overflow: hidden;
+}
+.captcha-container::before {
+content: '';
+position: absolute;
+top: -50%;
+right: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255, 183, 77, 0.1) 0%, rgba(255, 183, 77, 0) 70%);
+z-index: 0;
+}
+.captcha-container p {
+position: relative;
+z-index: 1;
+font-weight: 600;
+color: var(--dark-orange);
+margin-bottom: 12px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.captcha-text {
+font-size: 2.2rem;
+font-weight: bold;
+letter-spacing: 8px;
+margin: 12px 0;
+color: var(--dark-orange);
+font-family: 'Courier New', monospace;
+text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+background: linear-gradient(45deg, var(--primary), var(--secondary));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+position: relative;
+z-index: 1;
+}
+.captcha-input {
+width: 100%;
+padding: 14px;
+text-align: center;
+font-size: 1.3rem;
+margin-top: 12px;
+border-radius: 12px;
+border: 2px solid var(--light-orange);
+}
+/* Main Content */
+#main-content {
+display: none;
+}
+header {
+text-align: center;
+margin-bottom: 24px;
+padding: 20px;
+background: var(--card-bg);
+border-radius: var(--border-radius);
+box-shadow: var(--box-shadow);
+backdrop-filter: blur(10px);
+border: 1px solid var(--border-color);
+position: relative;
+overflow: hidden;
+}
+header::before {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255, 111, 0, 0.08) 0%, rgba(255, 111, 0, 0) 70%);
+z-index: 0;
+}
+header h1 {
+position: relative;
+z-index: 1;
+font-size: 2.5rem;
+font-weight: 800;
+color: var(--dark-orange);
+margin: 12px 0;
+background: linear-gradient(45deg, var(--dark-orange), var(--primary));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+header .subtitle {
+position: relative;
+z-index: 1;
+font-size: 1.2rem;
+color: var(--gray);
+font-weight: 500;
+}
+nav {
+background: var(--card-bg);
+border-radius: var(--border-radius);
+padding: 24px;
+box-shadow: var(--box-shadow);
+margin-bottom: 28px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+gap: 16px;
+backdrop-filter: blur(10px);
+border: 1px solid var(--border-color);
+position: relative;
+overflow: hidden;
+}
+nav::before {
+content: '';
+position: absolute;
+top: -50%;
+right: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255, 243, 224, 0.15) 0%, rgba(255, 243, 224, 0) 70%);
+z-index: 0;
+}
+select, input[type="text"] {
+width: 100%;
+padding: 12px;
+margin: 0;
+border: 2px solid var(--light-orange);
+border-radius: 12px;
+font-size: 1rem;
+background: white;
+transition: var(--transition);
+font-weight: 500;
+position: relative;
+z-index: 1;
+}
+select:focus, input[type="text"]:focus {
+outline: none;
+border-color: var(--secondary);
+box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.2);
+}
+.btn-modern {
+width: 100% !important;
+padding: 14px 20px !important;
+font-size: 1.05rem !important;
+border-radius: 12px !important;
+background: linear-gradient(135deg, var(--accent), #E6B800) !important;
+color: var(--black) !important;
+font-weight: 700 !important;
+cursor: pointer !important;
+border: none !important;
+box-shadow: 0 4px 12px rgba(255, 215, 0, 0.35) !important;
+transition: var(--transition) !important;
+display: flex !important;
+align-items: center !important;
+justify-content: center !important;
+gap: 10px !important;
+position: relative !important;
+overflow: hidden !important;
+z-index: 1 !important;
+}
+.btn-modern::after {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: linear-gradient(135deg, #E6B800, #BF9000);
+opacity: 0;
+transition: opacity 0.2s;
+z-index: -1;
+}
+.btn-modern:hover::after {
+opacity: 1;
+}
+.btn-modern:hover {
+transform: translateY(-3px) !important;
+box-shadow: 0 6px 16px rgba(230, 184, 0, 0.45) !important;
+}
+.results {
+background: var(--card-bg);
+border-radius: var(--border-radius);
+padding: 24px;
+box-shadow: var(--box-shadow);
+margin-top: 16px;
+max-height: 500px;
+overflow-y: auto;
+backdrop-filter: blur(10px);
+border: 1px solid var(--border-color);
+position: relative;
+}
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 16px;
+}
+th, td {
+padding: 14px;
+text-align: left;
+border-bottom: 1px solid #eee;
+}
+th {
+background: linear-gradient(135deg, var(--light-orange), var(--primary));
+color: white;
+font-weight: 700;
+text-transform: uppercase;
+font-size: 0.9rem;
+letter-spacing: 0.5px;
+position: sticky;
+top: 0;
+z-index: 10;
+}
+tr:hover td {
+background: rgba(245, 245, 245, 0.7);
+}
+footer {
+text-align: center;
+margin-top: 28px;
+padding: 16px;
+color: var(--gray);
+font-size: 0.95rem;
+font-weight: 500;
+border-top: 1px solid var(--border-color);
+}
+#receipt-template {
+display: none;
+width: 100%;
+max-width: 600px;
+margin: 0 auto;
+background: white;
+padding: 30px;
+font-family: Arial, sans-serif;
+border-radius: 15px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.receipt-header {
+text-align: center;
+margin-bottom: 20px;
+}
+.receipt-logo {
+width: 80px;
+height: 80px;
+background: url('img/logo.png');
+background-size: contain;
+background-position: center;
+background-repeat: no-repeat;
+margin: 0 auto 10px;
+border-radius: 50%;
+border: 2px solid var(--primary);
+}
+.receipt-title {
+font-size: 22px;
+color: var(--dark-orange);
+font-weight: bold;
+margin-bottom: 5px;
+}
+.receipt-subtitle {
+color: var(--gray);
+font-size: 16px;
+margin-bottom: 15px;
+}
+.receipt-factura {
+font-size: 18px;
+font-weight: bold;
+color: var(--primary);
+margin-bottom: 15px;
+}
+.receipt-details {
+margin: 20px 0;
+}
+.receipt-detail {
+display: flex;
+justify-content: space-between;
+margin-bottom: 8px;
+padding: 8px 0;
+border-bottom: 1px solid #eee;
+}
+.receipt-detail:last-child {
+border-bottom: none;
+font-weight: bold;
+color: var(--primary);
+font-size: 1.1rem;
+}
+.receipt-qr-container {
+text-align: center;
+margin: 24px 0 16px;
+padding: 16px;
+background: #f8f9fa;
+border-radius: 12px;
+border: 1px dashed var(--light-orange);
+}
+.receipt-qr-container img {
+width: 120px;
+height: 120px;
+display: inline-block;
+}
+.receipt-footer {
+margin-top: 25px;
+text-align: center;
+font-size: 14px;
+color: var(--gray);
+padding-top: 15px;
+border-top: 1px solid #eee;
+}
+.receipt-footer p {
+margin: 4px 0;
+}
+@keyframes slideIn {
+from { transform: translateY(-20px) scale(0.95); opacity: 0; }
+to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes fadeOut {
+to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
+.notification {
+position: fixed;
+top: 24px;
+left: 50%;
+transform: translateX(-50%);
+padding: 16px 28px;
+border-radius: 14px;
+color: white;
+font-weight: 700;
+font-size: 1.1rem;
+z-index: 10000;
+box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+animation: fadeIn 0.3s, fadeOut 0.3s 2.7s forwards;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.error {
+background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+.success {
+background: linear-gradient(135deg, var(--accent), #E6B800);
+}
+.warning {
+background: linear-gradient(135deg, #FFC107, #FF8F00);
+}
+/* Dashboard Styles */
+.dashboard-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 24px;
+margin-bottom: 28px;
+}
+.stat-card {
+background: var(--card-bg);
+border-radius: var(--border-radius);
+padding: 24px;
+box-shadow: var(--box-shadow);
+display: flex;
+justify-content: space-between;
+align-items: center;
+transition: var(--transition);
+backdrop-filter: blur(10px);
+border: 1px solid var(--border-color);
+position: relative;
+overflow: hidden;
+}
+.stat-card::before {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255, 111, 0, 0.08) 0%, rgba(255, 111, 0, 0) 70%);
+z-index: 0;
+}
+.stat-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+}
+.stat-info h3 {
+font-size: 1rem;
+color: var(--gray);
+margin-bottom: 8px;
+font-weight: 600;
+position: relative;
+z-index: 1;
+}
+.stat-info p {
+font-size: 2.2rem;
+font-weight: 800;
+color: var(--dark-orange);
+background: linear-gradient(45deg, var(--dark-orange), var(--primary));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+position: relative;
+z-index: 1;
+}
+.stat-icon {
+width: 60px;
+height: 60px;
+background: linear-gradient(135deg, var(--accent), #E6B800);
+border-radius: 16px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.8rem;
+color: var(--black);
+box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+position: relative;
+z-index: 1;
+}
+.section-title {
+font-size: 1.8rem;
+font-weight: 800;
+margin-bottom: 24px;
+color: var(--dark-orange);
+text-align: center;
+background: linear-gradient(45deg, var(--dark-orange), var(--primary));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+position: relative;
+padding-bottom: 10px;
+}
+.section-title::after {
+content: '';
+position: absolute;
+bottom: 0;
+left: 50%;
+transform: translateX(-50%);
+width: 60%;
+height: 3px;
+background: linear-gradient(90deg, var(--secondary), var(--primary));
+border-radius: 2px;
+}
+.analytics-container {
+background: var(--card-bg);
+border-radius: var(--border-radius);
+padding: 28px;
+box-shadow: var(--box-shadow);
+margin-bottom: 28px;
+backdrop-filter: blur(10px);
+border: 1px solid var(--border-color);
+position: relative;
+overflow: hidden;
+}
+.analytics-container::before {
+content: '';
+position: absolute;
+top: -50%;
+right: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(255, 183, 77, 0.08) 0%, rgba(255, 183, 77, 0) 70%);
+z-index: 0;
+}
+.chart-placeholder {
+height: 200px;
+display: flex;
+align-items: center;
+justify-content: center;
+background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+border-radius: 16px;
+margin-top: 16px;
+color: var(--gray);
+font-size: 1.1rem;
+font-weight: 600;
+position: relative;
+z-index: 1;
+border: 1px dashed var(--light-orange);
+}
+.chart-placeholder i {
+font-size: 3rem;
+margin-right: 16px;
+color: var(--primary);
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+.auth-card {
+padding: 24px;
+}
+.auth-title {
+font-size: 1.8rem;
+}
+.logo {
+width: 90px;
+height: 90px;
+}
+nav {
+grid-template-columns: 1fr;
+}
+.dashboard-grid {
+grid-template-columns: 1fr;
+}
+.btn {
+font-size: 1.1rem;
+}
+.captcha-text {
+font-size: 1.8rem;
+letter-spacing: 4px;
+}
+}
+/* Security Badge */
+.security-badge {
+position: fixed;
+top: 16px;
+right: 16px;
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 8px 16px;
+background: rgba(255, 111, 0, 0.92);
+color: white;
+border-radius: 50px;
+font-weight: 600;
+font-size: 0.85rem;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+z-index: 1001;
+animation: pulseBadge 2s infinite;
+}
+.security-badge i {
+font-size: 1.2rem;
+}
+@keyframes pulseBadge {
+0% { box-shadow: 0 0 0 0 rgba(255, 111, 0, 0.7); }
+70% { box-shadow: 0 0 0 8px rgba(255, 111, 0, 0); }
+100% { box-shadow: 0 0 0 0 rgba(255, 111, 0, 0); }
+}
+/* Connection Status */
+.connection-status {
+position: fixed;
+top: 16px;
+left: 16px;
+padding: 8px 16px;
+border-radius: 50px;
+font-size: 0.85rem;
+font-weight: bold;
+color: white;
+z-index: 1000;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.connection-status.online {
+background: linear-gradient(135deg, var(--accent), #E6B800);
+}
+.connection-status.offline {
+background: linear-gradient(135deg, #E65100, #BF360C);
+}
+</style>
 </head>
 <body>
-  <!-- Pantalla de Autenticación -->
-  <div class="auth-container" id="auth-screen">
-    <div class="auth-card">
-      <div class="logo-container">
-        <div class="logo"></div>
-        <h2 class="auth-title">Control Interno</h2>
-        <p class="auth-subtitle">Finca El Naranjo - Sistema de Gestión Avanzado</p>
-      </div>
-      
-      <div class="form-group">
-        <label for="password">Contraseña de Acceso</label>
-        <input type="password" id="password" placeholder="Ingrese su contraseña segura">
-      </div>
-      
-      <div class="captcha-container">
-        <p><i class="fas fa-shield-alt"></i> Verificación de seguridad</p>
-        <div class="captcha-text" id="captcha-text">AB3X9</div>
-        <input type="text" id="captcha-input" class="captcha-input" placeholder="Ingrese los caracteres mostrados">
-      </div>
-      
-      <button class="btn" id="login-btn">
-        <i class="fas fa-lock"></i> Acceder al Sistema
-      </button>
-    </div>
-  </div>
-
-  <!-- Contenido Principal -->
-  <div class="container" id="main-content">
-    <header>
-      <div class="logo-container">
-        <div class="logo"></div>
-        <h1 style="font-size: 2.5rem; font-weight: 800; color: var(--black); margin: 12px 0;">Control Interno</h1>
-        <p class="subtitle" style="font-size: 1.2rem; color: var(--gray);">Finca El Naranjo – Suaita, Santander</p>
-      </div>
-    </header>
-
-    <!-- Dashboard Section -->
-    <div class="analytics-container">
-      <h2 class="section-title">Dashboard Analítico</h2>
-      <div class="dashboard-grid">
-        <div class="stat-card">
-          <div class="stat-info">
-            <h3>Ventas Totales</h3>
-            <p id="dashboard-ventas">$0</p>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-dollar-sign"></i>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-info">
-            <h3>Gastos</h3>
-            <p id="dashboard-gastos">$0</p>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-file-invoice-dollar"></i>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-info">
-            <h3>Balance Neto</h3>
-            <p id="dashboard-neto">$0</p>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-balance-scale"></i>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-info">
-            <h3>Créditos</h3>
-            <p id="dashboard-debe">$0</p>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-hand-holding-usd"></i>
-          </div>
-        </div>
-      </div>
-      
-      <div class="chart-placeholder">
-        <i class="fas fa-chart-line"></i>
-        Gráfico de análisis de ventas y tendencias (implementación futura)
-      </div>
-    </div>
-
-    <nav>
-      <button class="btn-modern" onclick="goToMain()">
-        <i class="fas fa-arrow-left"></i> Volver al Registro Principal
-      </button>
-      <select id="mes-select">
-        <option value="">Seleccione un mes</option>
-        <option value="0">Enero</option>
-        <option value="1">Febrero</option>
-        <option value="2">Marzo</option>
-        <option value="3">Abril</option>
-        <option value="4">Mayo</option>
-        <option value="5">Junio</option>
-        <option value="6">Julio</option>
-        <option value="7">Agosto</option>
-        <option value="8">Septiembre</option>
-        <option value="9">Octubre</option>
-        <option value="10">Noviembre</option>
-        <option value="11">Diciembre</option>
-      </select>
-      <button class="btn-modern" onclick="descargarExtractoVentas()">
-        <i class="fas fa-file-download"></i> Extracto Mensual de Ventas
-      </button>
-      <button class="btn-modern" onclick="descargarExtractoGastos()">
-        <i class="fas fa-file-invoice-dollar"></i> Extracto Mensual de Gastos
-      </button>
-      <button class="btn-modern" onclick="clientesTop()">
-        <i class="fas fa-crown"></i> Clientes con +4 Ventas
-      </button>
-      <input type="text" id="cliente-input" placeholder="Nombre del cliente" />
-      <button class="btn-modern" onclick="ventasPorCliente()">
-        <i class="fas fa-search"></i> Ventas por Cliente
-      </button>
-    </nav>
-
-    <div class="results" id="resultados"></div>
-
-    <footer>
-      <p>Finca El Naranjo &copy; 2026 | Sistema de Control Interno Seguro</p>
-      <p style="margin-top:4px;font-size:0.85rem">Tel: 314 4361405 | fincaagropecuariaelnaranjo@gmail.com</p>
-    </footer>
-  </div>
-
-  <!-- Recibo para PDF -->
-  <div id="receipt-template">
-    <div style="text-align:center;">
-      <div style="width:80px;height:80px;background:url('img/logo.png');background-size:contain;background-position:center;margin:0 auto 10px;"></div>
-      <h2 style="color:#000;font-weight:bold;" id="receipt-title">REPORTE GENERADO</h2>
-      <p style="color:#666;font-size:14px;">Finca El Naranjo – Suaita, Santander</p>
-      <p id="receipt-factura" style="font-size:18px;color:#FF6F00;font-weight:bold;"></p>
-    </div>
-    <div id="receipt-details" style="margin:20px 0;"></div>
-    <div class="receipt-qr-container" id="receipt-qr"></div>
-    <p style="text-align:center;font-size:10px;color:#888;margin-top:20px;border-top:1px solid #eee;padding-top:10px;">
-      Generado desde Control Interno
-    </p>
-  </div>
-
-  <!-- Librerías externas -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script>
-    // Corregir la asignación de jsPDF
-    const { jsPDF } = window.jspdf;
-    
-    // === CAPTCHA ===
-    function generateCaptcha() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let captcha = '';
-      for (let i = 0; i < 5; i++) {
-        captcha += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      document.getElementById('captcha-text').textContent = captcha;
-    }
-    generateCaptcha();
-
-    // === NOTIFICACIONES ===
-    function showNotification(message, type) {
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-      setTimeout(() => notification.remove(), 3000);
-    }
-
-    // === AUTENTICACIÓN ===
-    document.getElementById('login-btn').addEventListener('click', () => {
-      const password = document.getElementById('password').value.trim();
-      const captcha = document.getElementById('captcha-input').value.trim();
-      
-      if (!password) return showNotification('Ingrese la contraseña', 'error');
-      if (!captcha || captcha.toUpperCase() !== document.getElementById('captcha-text').textContent) {
-        showNotification('Verificación incorrecta', 'error');
-        generateCaptcha();
-        document.getElementById('captcha-input').value = '';
-        return;
-      }
-      
-      if (password === 'control2026') {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        cargarDashboard();
-        showNotification('¡Bienvenido al sistema!', 'success');
-      } else {
-        showNotification('Contraseña incorrecta', 'error');
-        document.getElementById('password').value = '';
-      }
-    });
-
-    // === LECTURA SEGURA DE INDEXEDDB ===
-    async function getAllFromStore(storeName) {
-      return new Promise((resolve, reject) => {
-        const req = indexedDB.open('FincaElNaranjoDB', 3); // Versión actualizada
-        req.onsuccess = () => {
-          const db = req.result;
-          const tx = db.transaction([storeName], 'readonly');
-          const store = tx.objectStore(storeName);
-          const getAllReq = store.getAll();
-          getAllReq.onsuccess = () => {
-            resolve(getAllReq.result);
-            db.close();
-          };
-          getAllReq.onerror = () => {
-            db.close();
-            reject(getAllReq.error);
-          };
-        };
-        req.onerror = () => reject(req.error);
-        req.onupgradeneeded = (event) => {
-          const db = event.target.result;
-          // Crear almacenes si no existen
-          if (!db.objectStoreNames.contains('ventas')) {
-            db.createObjectStore('ventas', { keyPath: 'id' });
-          }
-          if (!db.objectStoreNames.contains('gastos')) {
-            db.createObjectStore('gastos', { keyPath: 'id' });
-          }
-          if (!db.objectStoreNames.contains('notas')) {
-            db.createObjectStore('notas', { keyPath: 'id' });
-          }
-          if (!db.objectStoreNames.contains('metadata')) {
-            const metaStore = db.createObjectStore('metadata', { keyPath: 'key' });
-            metaStore.put({ key: 'nextFacturaNumber', value: 1 });
-          }
-        };
-      });
-    }
-
-    // === DASHBOARD ===
-    async function cargarDashboard() {
-      try {
-        const ventas = await getAllFromStore('ventas');
-        const gastos = await getAllFromStore('gastos');
-        
-        const totalVentas = ventas.reduce((sum, v) => sum + v.total, 0);
-        const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0);
-        const debe = ventas.reduce((sum, v) => sum + (v.debe || 0), 0);
-        const neto = totalVentas - totalGastos;
-        
-        document.getElementById('dashboard-ventas').textContent = `$${totalVentas.toLocaleString('es-CO')}`;
-        document.getElementById('dashboard-gastos').textContent = `$${totalGastos.toLocaleString('es-CO')}`;
-        document.getElementById('dashboard-neto').textContent = `$${neto.toLocaleString('es-CO')}`;
-        document.getElementById('dashboard-debe').textContent = `$${debe.toLocaleString('es-CO')}`;
-      } catch (e) {
-        console.error('Error cargando dashboard:', e);
-      }
-    }
-
-    // === FUNCIONES PRINCIPALES ===
-    function formatDate(dateStr) {
-      const d = new Date(dateStr);
-      return d.toLocaleString('es-CO', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-
-    function generateQR(text) {
-      const encoded = encodeURIComponent(text);
-      return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encoded}`;
-    }
-
-    function mostrarTabla(titulo, headers, filas) {
-      let html = `<h3 style="color:#000;margin-bottom:16px;font-size:1.4rem;font-weight:700;">${titulo}</h3><table><thead><tr>`;
-      headers.forEach(h => html += `<th>${h}</th>`);
-      html += `</tr></thead><tbody>`;
-      filas.forEach(fila => {
-        html += `<tr>${fila.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
-      });
-      html += `</tbody></table>`;
-      document.getElementById('resultados').innerHTML = html;
-    }
-
-    async function filtrarPorMes(arr, mesIndex) {
-      const now = new Date();
-      const año = now.getFullYear();
-      return arr.filter(item => {
-        const fecha = new Date(item.fechaCompleta);
-        return fecha.getMonth() === mesIndex && fecha.getFullYear() === año;
-      });
-    }
-
-    async function descargarExtractoVentas() {
-      const mes = document.getElementById('mes-select').value;
-      if (mes === '') return showNotification('Seleccione un mes', 'error');
-      try {
-        const ventas = await getAllFromStore('ventas');
-        const filtradas = await filtrarPorMes(ventas, parseInt(mes));
-        if (filtradas.length === 0) return showNotification('No hay ventas este mes', 'error');
-        const headers = ['Factura', 'Cliente', 'Cubetas', 'Total', 'Fecha'];
-        const filas = filtradas.map(v => [
-          v.factura,
-          v.cliente,
-          v.cubetas,
-          `$${v.total.toLocaleString('es-CO')}`,
-          formatDate(v.fechaCompleta)
-        ]);
-        mostrarTabla(`Ventas – ${new Date(0, mes).toLocaleDateString('es-CO', { month: 'long' })}`, headers, filas);
-        generarPDF('extracto-ventas', headers, filas);
-      } catch (e) {
-        console.error(e);
-        showNotification('Error al cargar ventas', 'error');
-      }
-    }
-
-    async function descargarExtractoGastos() {
-      const mes = document.getElementById('mes-select').value;
-      if (mes === '') return showNotification('Seleccione un mes', 'error');
-      try {
-        const gastos = await getAllFromStore('gastos');
-        const filtrados = await filtrarPorMes(gastos, parseInt(mes));
-        if (filtrados.length === 0) return showNotification('No hay gastos este mes', 'error');
-        const tipoLabels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', otros: 'Otros' };
-        const headers = ['Tipo', 'Descripción', 'Monto', 'Fecha'];
-        const filas = filtrados.map(g => [
-          tipoLabels[g.tipo] || g.tipo,
-          g.descripcion || '-',
-          `$${g.monto.toLocaleString('es-CO')}`,
-          formatDate(g.fechaCompleta)
-        ]);
-        mostrarTabla(`Gastos – ${new Date(0, mes).toLocaleDateString('es-CO', { month: 'long' })}`, headers, filas);
-        generarPDF('extracto-gastos', headers, filas);
-      } catch (e) {
-        console.error(e);
-        showNotification('Error al cargar gastos', 'error');
-      }
-    }
-
-    async function clientesTop() {
-      try {
-        const ventas = await getAllFromStore('ventas');
-        const conteo = {};
-        ventas.forEach(v => {
-          conteo[v.cliente] = (conteo[v.cliente] || 0) + 1;
-        });
-        const topClientes = Object.entries(conteo)
-          .filter(([_, count]) => count > 4)
-          .sort((a, b) => b[1] - a[1])
-          .map(([cliente, count]) => {
-            const total = ventas
-              .filter(v => v.cliente === cliente)
-              .reduce((sum, v) => sum + v.total, 0);
-            return [cliente, count, `$${total.toLocaleString('es-CO')}`];
-          });
-        if (topClientes.length === 0) return showNotification('No hay clientes con +4 ventas', 'error');
-        const headers = ['Cliente', 'N° Ventas', 'Total Comprado ($)'];
-        mostrarTabla('Clientes con más de 4 ventas', headers, topClientes);
-        generarPDF('clientes-top', headers, topClientes);
-      } catch (e) {
-        console.error(e);
-        showNotification('Error al cargar clientes', 'error');
-      }
-    }
-
-    async function ventasPorCliente() {
-      const nombre = document.getElementById('cliente-input').value.trim();
-      if (!nombre) return showNotification('Ingrese nombre de cliente', 'error');
-      try {
-        const ventas = await getAllFromStore('ventas');
-        const delCliente = ventas.filter(v => v.cliente.toLowerCase().includes(nombre.toLowerCase()));
-        if (delCliente.length === 0) return showNotification('No se encontraron ventas', 'error');
-        const headers = ['Factura', 'Cubetas', 'Total', 'Crédito', 'Fecha'];
-        const filas = delCliente.map(v => [
-          v.factura,
-          v.cubetas,
-          `$${v.total.toLocaleString('es-CO')}`,
-          v.debe ? `$${v.debe.toLocaleString('es-CO')}` : '—',
-          formatDate(v.fechaCompleta)
-        ]);
-        mostrarTabla(`Ventas de: ${nombre}`, headers, filas);
-        generarPDF(`ventas-${nombre}`, headers, filas);
-      } catch (e) {
-        console.error(e);
-        showNotification('Error al buscar cliente', 'error');
-      }
-    }
-
-    // Función corregida para generar PDF
-    function generarPDF(nombre, headers, filas) {
-      const template = document.getElementById('receipt-template');
-      const details = document.getElementById('receipt-details');
-      const qrContainer = document.getElementById('receipt-qr');
-
-      // Construir la tabla HTML
-      let html = `<table style="width:100%;border-collapse:collapse;font-size:12px;">`;
-      html += `<thead><tr style="background:#fff8f0;">`;
-      headers.forEach(h => html += `<th style="padding:6px;border:1px solid #ddd;">${h}</th>`);
-      html += `</tr></thead><tbody>`;
-      filas.forEach(fila => {
-        html += `<tr>`;
-        fila.forEach(cell => html += `<td style="padding:6px;border:1px solid #ddd;">${cell}</td>`);
-        html += `</tr>`;
-      });
-      html += `</tbody></table>`;
-      details.innerHTML = html;
-      document.getElementById('receipt-factura').textContent = nombre.toUpperCase();
-
-      // Generar QR
-      const qrText = `Reporte: ${nombre}\nGenerado: ${new Date().toLocaleString('es-CO')}\nOrigen: Control Interno`;
-      const qrUrl = generateQR(qrText);
-      
-      const qrImage = new Image();
-      qrImage.src = qrUrl;
-      
-      qrImage.onload = () => {
-        qrContainer.innerHTML = '';
-        qrContainer.appendChild(qrImage);
-        
-        template.style.display = 'block';
-        
-        // Usar html2canvas para capturar el template
-        html2canvas(template, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true
-        }).then(canvas => {
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const imgWidth = 210;
-          const pageHeight = 295;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let heightLeft = imgHeight;
-          let position = 0;
-
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-
-          while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-          }
-
-          pdf.save(`${nombre}.pdf`);
-          template.style.display = 'none';
-        }).catch(error => {
-          console.error('Error en html2canvas:', error);
-          template.style.display = 'none';
-          showNotification('Error al generar el PDF', 'error');
-        });
-      };
-      
-      qrImage.onerror = () => {
-        console.error('Error al cargar QR');
-        qrContainer.innerHTML = '<p style="color:red;">Error QR</p>';
-        template.style.display = 'block';
-        
-        html2canvas(template, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true
-        }).then(canvas => {
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const imgWidth = 210;
-          const pageHeight = 295;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let heightLeft = imgHeight;
-          let position = 0;
-
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-
-          while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-          }
-
-          pdf.save(`${nombre}.pdf`);
-          template.style.display = 'none';
-        }).catch(error => {
-          console.error('Error en html2canvas sin QR:', error);
-          template.style.display = 'none';
-          showNotification('Error al generar el PDF', 'error');
-        });
-      };
-    }
-
-    function goToMain() {
-      window.location.href = 'index.html';
-    }
-  </script>
+<!-- Security Badge -->
+<div class="security-badge">
+<i class="fas fa-shield-alt"></i>
+<span>Control Interno Seguro</span>
+</div>
+<!-- Connection Status -->
+<div class="connection-status online" id="connection-status">
+<i class="fas fa-wifi"></i>
+<span>Conectado a Base de Datos</span>
+</div>
+<!-- Pantalla de Autenticación -->
+<div class="auth-container" id="auth-screen">
+<div class="auth-card">
+<div class="logo-container">
+<div class="logo"></div>
+<h2 class="auth-title">Control Interno</h2>
+<p class="auth-subtitle">Sistema de Gestión Avanzado<br>Finca El Naranjo</p>
+</div>
+<div class="form-group">
+<label for="password"><i class="fas fa-key"></i> Contraseña de Acceso</label>
+<input type="password" id="password" placeholder="Ingrese su contraseña segura" autocomplete="off">
+</div>
+<div class="captcha-container">
+<p><i class="fas fa-shield-alt"></i> Verificación de seguridad</p>
+<div class="captcha-text" id="captcha-text">AB3X9</div>
+<input type="text" id="captcha-input" class="captcha-input" placeholder="Ingrese los caracteres mostrados" maxlength="5">
+</div>
+<button class="btn" id="login-btn">
+<i class="fas fa-lock"></i> Acceder al Sistema
+</button>
+<div style="margin-top: 20px; padding: 12px; background: rgba(255, 243, 224, 0.3); border-radius: 12px; border-left: 4px solid var(--expense-color); font-size: 0.9rem; color: var(--dark-orange);">
+<p><i class="fas fa-info-circle"></i> <strong>Nota:</strong> Esta área está restringida para personal autorizado.</p>
+</div>
+</div>
+</div>
+<!-- Contenido Principal -->
+<div class="container" id="main-content">
+<header>
+<div class="logo-container">
+<div class="logo"></div>
+<h1>Control Interno</h1>
+<p class="subtitle">Finca El Naranjo</p>
+</div>
+</header>
+<!-- Dashboard Section -->
+<div class="analytics-container">
+<h2 class="section-title">Dashboard Analítico</h2>
+<div class="dashboard-grid">
+<div class="stat-card">
+<div class="stat-info">
+<h3>Ventas Totales</h3>
+<p id="stat-total-sales">0</p>
+</div>
+<div class="stat-icon">
+<i class="fas fa-dollar-sign"></i>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-info">
+<h3>Ingresos</h3>
+<p id="stat-total-income">$0</p>
+</div>
+<div class="stat-icon">
+<i class="fas fa-chart-line"></i>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-info">
+<h3>Gastos</h3>
+<p id="stat-total-expenses">$0</p>
+</div>
+<div class="stat-icon">
+<i class="fas fa-file-invoice-dollar"></i>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-info">
+<h3>Balance</h3>
+<p id="stat-balance">$0</p>
+</div>
+<div class="stat-icon">
+<i class="fas fa-balance-scale"></i>
+</div>
+</div>
+</div>
+<div class="chart-placeholder">
+<i class="fas fa-chart-bar"></i>
+Gráfico de análisis de ventas y tendencias (implementación futura)
+</div>
+</div>
+<nav>
+<button class="btn-modern" onclick="goToMain()">
+<i class="fas fa-arrow-left"></i> Volver al Registro Principal
+</button>
+<select id="mes-select">
+<option value="">Seleccione un mes</option>
+<option value="0">Enero</option>
+<option value="1">Febrero</option>
+<option value="2">Marzo</option>
+<option value="3">Abril</option>
+<option value="4">Mayo</option>
+<option value="5">Junio</option>
+<option value="6">Julio</option>
+<option value="7">Agosto</option>
+<option value="8">Septiembre</option>
+<option value="9">Octubre</option>
+<option value="10">Noviembre</option>
+<option value="11">Diciembre</option>
+</select>
+<button class="btn-modern" onclick="descargarExtractoVentas()">
+<i class="fas fa-file-download"></i> Extracto Mensual de Ventas
+</button>
+<button class="btn-modern" onclick="descargarExtractoGastos()">
+<i class="fas fa-file-invoice-dollar"></i> Extracto Mensual de Gastos
+</button>
+<button class="btn-modern" onclick="clientesTop()">
+<i class="fas fa-crown"></i> Clientes con +4 Ventas
+</button>
+<input type="text" id="cliente-input" placeholder="Nombre del cliente" />
+<button class="btn-modern" onclick="ventasPorCliente()">
+<i class="fas fa-search"></i> Ventas por Cliente
+</button>
+<button class="btn-modern" onclick="generarReporteCompleto()">
+<i class="fas fa-file-pdf"></i> Reporte Completo
+</button>
+</nav>
+<div class="results" id="resultados">
+<p style="text-align:center; padding:30px; color:var(--gray); font-size:1.1rem;">
+<i class="fas fa-info-circle" style="font-size:2rem; margin-bottom:10px; color:var(--primary);"></i><br>
+Bienvenido al Sistema de Control Interno<br>
+Seleccione una opción en el menú para generar reportes y análisis
+</p>
+</div>
+<footer>
+<p>Finca El Naranjo &copy; 2026 | Sistema de Control Interno Seguro</p>
+<p style="margin-top:6px;font-size:0.9rem">Control total de tu negocio agropecuario</p>
+<p style="margin-top:4px;font-size:0.85rem">Tel: 3023844588 | Nequi o Daviplata</p>
+</footer>
+</div>
+<!-- Recibo para PDF -->
+<div id="receipt-template">
+<div class="receipt-header">
+<div class="receipt-logo"></div>
+<h2 class="receipt-title" id="receipt-title">REPORTE GENERADO</h2>
+<p class="receipt-subtitle">Finca El Naranjo</p>
+<div class="receipt-factura" id="receipt-factura"></div>
+</div>
+<div class="receipt-details" id="receipt-details"></div>
+<div class="receipt-qr-container" id="receipt-qr"></div>
+<div class="receipt-footer">
+<p>Generado desde Control Interno</p>
+<p style="font-size:10px;color:#888;margin-top:5px;font-style:italic;">
+Sistema Integral de Gestión Agropecuaria
+</p>
+<p style="font-size:9px;color:#999;margin-top:3px;">
+Tel: 3023844588 | Nequi o Daviplata
+</p>
+</div>
+</div>
+<!-- Librerías externas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// Corregir la asignación de jsPDF
+const { jsPDF } = window.jspdf;
+// === CAPTCHA ===
+function generateCaptcha() {
+const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+let captcha = '';
+for (let i = 0; i < 5; i++) {
+captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+}
+document.getElementById('captcha-text').textContent = captcha;
+}
+generateCaptcha();
+// === NOTIFICACIONES ===
+function showNotification(message, type) {
+const notification = document.createElement('div');
+notification.className = `notification ${type}`;
+notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i> ${message}`;
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 3000);
+}
+// === AUTENTICACIÓN ===
+document.getElementById('login-btn').addEventListener('click', () => {
+const password = document.getElementById('password').value.trim();
+const captcha = document.getElementById('captcha-input').value.trim();
+if (!password) return showNotification('Ingrese la contraseña', 'error');
+if (!captcha || captcha.toUpperCase() !== document.getElementById('captcha-text').textContent) {
+showNotification('Verificación incorrecta', 'error');
+generateCaptcha();
+document.getElementById('captcha-input').value = '';
+return;
+}
+if (password === 'control2026') {
+document.getElementById('auth-screen').style.display = 'none';
+document.getElementById('main-content').style.display = 'block';
+showNotification('¡Bienvenido al sistema!', 'success');
+loadDataForDashboard();
+} else {
+showNotification('Contraseña incorrecta', 'error');
+document.getElementById('password').value = '';
+}
+});
+// Allow Enter key to submit login
+document.getElementById('password').addEventListener('keypress', (e) => {
+if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+document.getElementById('captcha-input').addEventListener('keypress', (e) => {
+if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+// === LECTURA SEGURA DE INDEXEDDB ===
+async function getAllFromStore(storeName) {
+return new Promise((resolve, reject) => {
+const req = indexedDB.open('FincaElNaranjoDB', 5);
+req.onsuccess = () => {
+const db = req.result;
+const tx = db.transaction([storeName], 'readonly');
+const store = tx.objectStore(storeName);
+const getAllReq = store.getAll();
+getAllReq.onsuccess = () => {
+resolve(getAllReq.result);
+db.close();
+};
+getAllReq.onerror = () => {
+db.close();
+reject(getAllReq.error);
+};
+};
+req.onerror = () => reject(req.error);
+req.onupgradeneeded = (event) => {
+const db = event.target.result;
+// Crear almacenes si no existen
+if (!db.objectStoreNames.contains('ventas')) {
+db.createObjectStore('ventas', { keyPath: 'id' });
+}
+if (!db.objectStoreNames.contains('gastos')) {
+db.createObjectStore('gastos', { keyPath: 'id' });
+}
+if (!db.objectStoreNames.contains('metadata')) {
+const metaStore = db.createObjectStore('metadata', { keyPath: 'key' });
+metaStore.put({ key: 'nextReciboNumber', value: 1 });
+}
+};
+});
+}
+// === FUNCIONES PRINCIPALES ===
+function formatDate(dateStr) {
+const d = new Date(dateStr);
+return d.toLocaleString('es-CO', {
+day: '2-digit',
+month: '2-digit',
+year: 'numeric',
+hour: '2-digit',
+minute: '2-digit'
+});
+}
+function generateQR(text) {
+const encoded = encodeURIComponent(text);
+return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encoded}`;
+}
+function mostrarTabla(titulo, headers, filas) {
+let html = `<h3 style="color:#E65100;margin-bottom:16px;font-size:1.4rem;font-weight:700;text-align:center;">${titulo}</h3><table><thead><tr>`;
+headers.forEach(h => html += `<th>${h}</th>`);
+html += `</tr></thead><tbody>`;
+filas.forEach(fila => {
+html += `<tr>${fila.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+});
+html += `</tbody></table>`;
+document.getElementById('resultados').innerHTML = html;
+}
+async function filtrarPorMes(arr, mesIndex) {
+const now = new Date();
+const año = now.getFullYear();
+return arr.filter(item => {
+const fecha = new Date(item.fechaCompleta);
+return fecha.getMonth() === mesIndex && fecha.getFullYear() === año;
+});
+}
+async function descargarExtractoVentas() {
+const mes = document.getElementById('mes-select').value;
+if (mes === '') return showNotification('Seleccione un mes', 'warning');
+try {
+const ventas = await getAllFromStore('ventas');
+const filtradas = await filtrarPorMes(ventas, parseInt(mes));
+if (filtradas.length === 0) return showNotification('No hay ventas este mes', 'warning');
+const unidadLabels = { 'unidad': 'Ud', 'libra': 'Lb', 'kilo': 'Kg' };
+const headers = ['Recibo', 'Cliente', 'Producto', 'Cantidad', 'Total', 'Fecha'];
+const filas = filtradas.map(v => [
+v.factura,
+v.cliente,
+v.producto,
+`${v.cantidad} ${unidadLabels[v.unidadMedida] || v.unidadMedida}`,
+`$${v.total.toLocaleString('es-CO')}`,
+formatDate(v.fechaCompleta)
+]);
+mostrarTabla(`Ventas – ${new Date(0, mes).toLocaleDateString('es-CO', { month: 'long' })}`, headers, filas);
+generarPDF('extracto-ventas', headers, filas, `Ventas - ${new Date(0, mes).toLocaleDateString('es-CO', { month: 'long' })}`);
+} catch (e) {
+console.error(e);
+showNotification('Error al cargar ventas', 'error');
+}
+}
+async function descargarExtractoGastos() {
+const mes = document.getElementById('mes-select').value;
+if (mes === '') return showNotification('Seleccione un mes', 'warning');
+try {
+const gastos = await getAllFromStore('gastos');
+const filtrados = await filtrarPorMes(gastos, parseInt(mes));
+if (filtrados.length === 0) return showNotification('No hay gastos este mes', 'warning');
+const tipoLabels = { purina: 'Purina', medicamento: 'Medicamento', transporte: 'Transporte', mantenimiento: 'Mant.', alimentacion: 'Alimentación', otros: 'Otros' };
+const headers = ['Tipo', 'Descripción', 'Monto', 'Fecha'];
+const filas = filtrados.map(g => [
+tipoLabels[g.tipo] || g.tipo,
+g.descripcion || '-',
+`$${g.monto.toLocaleString('es-CO')}`,
+formatDate(g.fechaCompleta)
+]);
+mostrarTabla(`Gastos – ${new Date(0, mes).toLocaleDateString('es-CO', { month: 'long' })}`, headers, filas);
+generarPDF('extracto-gastos', headers, filas, `Gastos - ${new Date(0, mes).toLocaleDateString('es-CO', { month: 'long' })}`);
+} catch (e) {
+console.error(e);
+showNotification('Error al cargar gastos', 'error');
+}
+}
+async function clientesTop() {
+try {
+const ventas = await getAllFromStore('ventas');
+const conteo = {};
+ventas.forEach(v => {
+conteo[v.cliente] = (conteo[v.cliente] || 0) + 1;
+});
+const topClientes = Object.entries(conteo)
+.filter(([_, count]) => count > 4)
+.sort((a, b) => b[1] - a[1])
+.map(([cliente, count]) => {
+const total = ventas
+.filter(v => v.cliente === cliente)
+.reduce((sum, v) => sum + v.total, 0);
+return [cliente, count, `$${total.toLocaleString('es-CO')}`];
+});
+if (topClientes.length === 0) return showNotification('No hay clientes con +4 ventas', 'warning');
+const headers = ['Cliente', 'N° Ventas', 'Total Comprado ($)'];
+mostrarTabla('Clientes con más de 4 ventas', headers, topClientes);
+generarPDF('clientes-top', headers, topClientes, 'Clientes Top');
+} catch (e) {
+console.error(e);
+showNotification('Error al cargar clientes', 'error');
+}
+}
+async function ventasPorCliente() {
+const nombre = document.getElementById('cliente-input').value.trim();
+if (!nombre) return showNotification('Ingrese nombre de cliente', 'warning');
+try {
+const ventas = await getAllFromStore('ventas');
+const delCliente = ventas.filter(v => v.cliente.toLowerCase().includes(nombre.toLowerCase()));
+if (delCliente.length === 0) return showNotification('No se encontraron ventas', 'warning');
+const unidadLabels = { 'unidad': 'Ud', 'libra': 'Lb', 'kilo': 'Kg' };
+const headers = ['Recibo', 'Producto', 'Cantidad', 'Total', 'Crédito', 'Fecha'];
+const filas = delCliente.map(v => [
+v.factura,
+v.producto,
+`${v.cantidad} ${unidadLabels[v.unidadMedida] || v.unidadMedida}`,
+`$${v.total.toLocaleString('es-CO')}`,
+v.debe ? `$${v.debe.toLocaleString('es-CO')}` : '—',
+formatDate(v.fechaCompleta)
+]);
+mostrarTabla(`Ventas de: ${nombre}`, headers, filas);
+generarPDF(`ventas-${nombre.replace(/\s+/g, '-')}`, headers, filas, `Ventas de ${nombre}`);
+} catch (e) {
+console.error(e);
+showNotification('Error al buscar cliente', 'error');
+}
+}
+async function generarReporteCompleto() {
+try {
+const ventas = await getAllFromStore('ventas');
+const gastos = await getAllFromStore('gastos');
+// Calcular totales
+const totalVentas = ventas.length;
+const totalIngresos = ventas.reduce((sum, v) => sum + v.total, 0);
+const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0);
+const balance = totalIngresos - totalGastos;
+// Preparar datos para el PDF
+const headers = ['Concepto', 'Valor'];
+const filas = [
+['Ventas Totales', totalVentas.toString()],
+['Total Ingresos', `$${totalIngresos.toLocaleString('es-CO')}`],
+['Total Gastos', `$${totalGastos.toLocaleString('es-CO')}`],
+['Balance Neto', `$${balance.toLocaleString('es-CO')}`]
+];
+// Mostrar en la tabla
+mostrarTabla('Reporte Completo Financiero', headers, filas);
+// Generar PDF
+generarPDF('reporte-completo', headers, filas, 'Reporte Completo Financiero');
+} catch (e) {
+console.error(e);
+showNotification('Error al generar reporte completo', 'error');
+}
+}
+// Función para cargar datos del dashboard
+async function loadDataForDashboard() {
+try {
+const ventas = await getAllFromStore('ventas');
+const gastos = await getAllFromStore('gastos');
+// Calcular totales
+const totalVentas = ventas.length;
+const totalIngresos = ventas.reduce((sum, v) => sum + v.total, 0);
+const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0);
+const balance = totalIngresos - totalGastos;
+// Actualizar el dashboard
+document.getElementById('stat-total-sales').textContent = totalVentas;
+document.getElementById('stat-total-income').textContent = `$${totalIngresos.toLocaleString('es-CO')}`;
+document.getElementById('stat-total-expenses').textContent = `$${totalGastos.toLocaleString('es-CO')}`;
+document.getElementById('stat-balance').textContent = `$${balance.toLocaleString('es-CO')}`;
+// Estilo dinámico para el balance
+const balanceEl = document.getElementById('stat-balance');
+if (balance >= 0) {
+balanceEl.style.color = '#FF6F00';
+balanceEl.style.textShadow = '0 0 8px rgba(255, 111, 0, 0.4)';
+} else {
+balanceEl.style.color = '#F44336';
+balanceEl.style.textShadow = '0 0 8px rgba(244, 67, 54, 0.4)';
+}
+} catch (e) {
+console.error('Error cargando datos del dashboard:', e);
+showNotification('Error al cargar datos del dashboard', 'error');
+}
+}
+// Función corregida para generar PDF
+function generarPDF(nombre, headers, filas, titulo) {
+const template = document.getElementById('receipt-template');
+const details = document.getElementById('receipt-details');
+const qrContainer = document.getElementById('receipt-qr');
+const receiptTitle = document.getElementById('receipt-title');
+const receiptFactura = document.getElementById('receipt-factura');
+// Configurar título y subtítulo
+receiptTitle.textContent = titulo || 'REPORTE GENERADO';
+receiptFactura.textContent = `Generado: ${new Date().toLocaleDateString('es-CO', {
+day: '2-digit',
+month: 'long',
+year: 'numeric'
+})}`;
+// Construir la tabla HTML con estilos en línea
+let html = `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:15px;">`;
+html += `<thead><tr style="background:linear-gradient(135deg,#FFB74D,#FF6F00);color:white;font-weight:bold;">`;
+headers.forEach(h => html += `<th style="padding:8px 6px;border:1px solid #ddd;text-align:left;">${h}</th>`);
+html += `</tr></thead><tbody>`;
+filas.forEach((fila, index) => {
+const rowStyle = index % 2 === 0 ? 'background:#f8f9fa;' : '';
+html += `<tr style="${rowStyle}">`;
+fila.forEach(cell => {
+html += `<td style="padding:8px 6px;border:1px solid #ddd;">${cell}</td>`;
+});
+html += `</tr>`;
+});
+html += `</tbody></table>`;
+// Agregar totales si es un reporte financiero
+if (nombre === 'reporte-completo') {
+html += `<div style="margin-top:20px;padding-top:15px;border-top:2px solid #FF6F00;font-weight:bold;text-align:center;">
+<p style="font-size:14px;color:#E65100;">Reporte Financiero Completo</p>
+<p style="font-size:12px;color:#666;">Generado desde Sistema de Control Interno</p>
+</div>`;
+}
+details.innerHTML = html;
+// Generar QR
+const qrText = `${titulo || 'Reporte'}
+Generado: ${new Date().toLocaleString('es-CO')}
+Origen: Control Interno Finca El Naranjo`;
+const qrUrl = generateQR(qrText);
+const qrImage = new Image();
+qrImage.src = qrUrl;
+qrImage.onload = () => {
+qrContainer.innerHTML = '';
+qrContainer.appendChild(qrImage);
+template.style.display = 'block';
+// Usar html2canvas para capturar el template
+html2canvas(template, {
+scale: 2,
+useCORS: true,
+allowTaint: true,
+logging: false
+}).then(canvas => {
+const imgData = canvas.toDataURL('image/png');
+const pdf = new jsPDF('p', 'mm', 'a4');
+const imgWidth = 210;
+const pageHeight = 295;
+const imgHeight = (canvas.height * imgWidth) / canvas.width;
+let heightLeft = imgHeight;
+let position = 0;
+pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+heightLeft -= pageHeight;
+while (heightLeft >= 0) {
+position = heightLeft - imgHeight;
+pdf.addPage();
+pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+heightLeft -= pageHeight;
+}
+pdf.save(`${nombre}-${new Date().toISOString().slice(0,10)}.pdf`);
+template.style.display = 'none';
+showNotification('PDF generado exitosamente', 'success');
+}).catch(error => {
+console.error('Error en html2canvas:', error);
+template.style.display = 'none';
+showNotification('Error al generar el PDF', 'error');
+});
+};
+qrImage.onerror = () => {
+console.error('Error al cargar QR');
+qrContainer.innerHTML = '<p style="color:#F44336;font-weight:bold;">Error generando QR</p>';
+template.style.display = 'block';
+html2canvas(template, {
+scale: 2,
+useCORS: true,
+allowTaint: true,
+logging: false
+}).then(canvas => {
+const imgData = canvas.toDataURL('image/png');
+const pdf = new jsPDF('p', 'mm', 'a4');
+const imgWidth = 210;
+const pageHeight = 295;
+const imgHeight = (canvas.height * imgWidth) / canvas.width;
+let heightLeft = imgHeight;
+let position = 0;
+pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+heightLeft -= pageHeight;
+while (heightLeft >= 0) {
+position = heightLeft - imgHeight;
+pdf.addPage();
+pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+heightLeft -= pageHeight;
+}
+pdf.save(`${nombre}-${new Date().toISOString().slice(0,10)}.pdf`);
+template.style.display = 'none';
+showNotification('PDF generado (sin QR)', 'warning');
+}).catch(error => {
+console.error('Error en html2canvas sin QR:', error);
+template.style.display = 'none';
+showNotification('Error al generar el PDF', 'error');
+});
+};
+}
+function goToMain() {
+// Verificar si estamos en GitHub Pages o en local
+const isGitHubPages = window.location.hostname.includes('github.io');
+if (isGitHubPages) {
+// Si estamos en GitHub Pages, redirigir a la página principal del repositorio
+const repoPath = window.location.pathname.split('/')[1];
+window.location.href = `/${repoPath}/index.html`;
+} else {
+// Si estamos en local, redirigir a index.html
+window.location.href = 'index.html';
+}
+}
+// Verificar conexión a la base de datos al cargar
+window.addEventListener('load', () => {
+setTimeout(() => {
+showNotification('Conexión establecida con la base de datos', 'success');
+}, 1000);
+});
+// Manejar eventos de conexión
+window.addEventListener('online', () => {
+document.getElementById('connection-status').className = 'connection-status online';
+document.getElementById('connection-status').innerHTML = '<i class="fas fa-wifi"></i> <span>Conectado a Base de Datos</span>';
+showNotification('Conexión restaurada', 'success');
+});
+window.addEventListener('offline', () => {
+document.getElementById('connection-status').className = 'connection-status offline';
+document.getElementById('connection-status').innerHTML = '<i class="fas fa-wifi-slash"></i> <span>Sin Conexión</span>';
+showNotification('Sin conexión a la base de datos', 'warning');
+});
+</script>
 </body>
 </html>
-

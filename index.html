@@ -29,6 +29,9 @@
 --warning-color: #FF9800;
 --danger-color: #F44336;
 --success-color: #4CAF50;
+--edit-color: #2196F3;
+--delete-color: #F44336;
+--download-color: #4CAF50;
 }
 * {
 margin: 0;
@@ -369,7 +372,7 @@ color: var(--accent);
 }
 .neto-positivo { color: var(--success-color) !important; }
 .neto-negativo { color: var(--danger-color) !important; }
-/* Tablas */
+/* Tablas - BOTONES MODERNOS */
 .table-container {
 overflow-x: auto;
 border-radius: 10px;
@@ -416,33 +419,97 @@ border-bottom: 1px solid #E0E0E0;
 .sales-table tr:hover, .expenses-table tr:hover, .notes-table tr:hover {
 background: rgba(224, 224, 224, 0.3);
 }
+/* BOTONES DE ACCIÓN MODERNOS */
 .actions {
 display: flex;
-gap: 6px;
+gap: 8px;
+justify-content: center;
+align-items: center;
+padding: 8px 0;
 }
 .action-btn {
-padding: 6px 12px;
-border-radius: 6px;
-font-size: 0.75rem;
-cursor: pointer;
+width: 36px;
+height: 36px;
+border-radius: 50%;
 border: none;
-font-weight: 600;
-transition: all 0.2s ease;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 16px;
+transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+position: relative;
+overflow: hidden;
+}
+.action-btn::before {
+content: '';
+position: absolute;
+top: 50%;
+left: 50%;
+width: 0;
+height: 0;
+border-radius: 50%;
+background: rgba(255,255,255,0.3);
+transform: translate(-50%, -50%);
+transition: width 0.6s, height 0.6s;
+}
+.action-btn:hover::before {
+width: 100px;
+height: 100px;
 }
 .action-btn:hover {
-transform: scale(1.1);
+transform: translateY(-2px) scale(1.1);
+box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.action-btn:active {
+transform: scale(0.95);
 }
 .edit-btn {
-background: var(--light-orange);
-color: var(--black);
+background: linear-gradient(135deg, var(--edit-color), #0D47A1);
+color: white;
+}
+.edit-btn:hover {
+background: linear-gradient(135deg, #0D47A1, #0A2463);
+box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
 }
 .delete-btn {
-background: var(--danger-color);
+background: linear-gradient(135deg, var(--delete-color), #D32F2F);
 color: white;
 }
+.delete-btn:hover {
+background: linear-gradient(135deg, #D32F2F, #B71C1C);
+box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
 .download-btn {
-background: var(--info-color);
+background: linear-gradient(135deg, var(--download-color), #388E3C);
 color: white;
+}
+.download-btn:hover {
+background: linear-gradient(135deg, #388E3C, #1B5E20);
+box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+/* Tooltip para botones */
+.action-btn::after {
+content: attr(data-tooltip);
+position: absolute;
+bottom: 100%;
+left: 50%;
+transform: translateX(-50%) translateY(10px);
+background: rgba(0,0,0,0.85);
+color: white;
+font-size: 11px;
+padding: 4px 8px;
+border-radius: 4px;
+white-space: nowrap;
+opacity: 0;
+pointer-events: none;
+transition: all 0.3s ease;
+z-index: 100;
+}
+.action-btn:hover::after {
+opacity: 1;
+transform: translateX(-50%) translateY(0);
 }
 /* Footer */
 .footer {
@@ -689,6 +756,14 @@ font-size: 0.95rem;
 .notes-card textarea {
 min-height: 100px;
 }
+.actions {
+flex-direction: column;
+gap: 6px;
+}
+.action-btn {
+width: 40px;
+height: 40px;
+}
 }
 /* Notification */
 .notification {
@@ -781,7 +856,7 @@ color: var(--black);
 </div>
 <div class="form-group">
 <label for="factura">N° Recibo *</label>
-<input type="text" id="factura" placeholder="R-0001" readonly>
+<input type="text" id="factura" placeholder="R-0001" required>
 </div>
 <div class="form-group">
 <label for="producto">Producto *</label>
@@ -919,7 +994,7 @@ color: var(--black);
 <div class="card">
 <h2 class="card-title">📋 Ventas Registradas</h2>
 <div class="search-bar">
-<input type="text" id="search-ventas" class="search-input" placeholder="🔍 Buscar por cliente, producto o recibo...">
+<input type="text" id="search-ventas" class="search-input" placeholder="🔍 Buscar por recibo, cliente o fecha...">
 </div>
 <div class="table-container">
 <table class="sales-table">
@@ -945,7 +1020,7 @@ color: var(--black);
 <div class="card">
 <h2 class="card-title">🧾 Gastos Registrados</h2>
 <div class="search-bar">
-<input type="text" id="search-gastos" class="search-input" placeholder="🔍 Buscar por tipo o descripción...">
+<input type="text" id="search-gastos" class="search-input" placeholder="🔍 Buscar por tipo, descripción o fecha...">
 </div>
 <div class="table-container">
 <table class="expenses-table">
@@ -967,7 +1042,7 @@ color: var(--black);
 <div class="footer">
 <p>Finca El Naranjo &copy; 2026 | Sistema Integral de Gestión</p>
 <p style="margin-top:4px;font-size:0.8rem">Productos: Pollo Criollo, Semicriollo, Cuajada y Queso</p>
-<p style="margin-top:4px;font-size:0.8rem">Tel: 3023844588 para pagos Nequi o Daviplata</p>
+<p style="margin-top:4px;font-size:0.8rem">Tel: 3023844588 | Nequi o Daviplata</p>
 </div>
 </div>
 <!-- PDF Template -->
@@ -1032,7 +1107,7 @@ una factura de venta ni documento equivalente según el Estatuto Tributario.
 <p style="font-size: 10px; color: #999; font-style: italic;">Para realizar el pago de su compra, puede hacerlo</p>
 <p style="font-size: 10px; color: #999; font-style: italic;">por transferencia vía Nequi o Daviplata al número:</p>
 <p style="font-size: 10px; color: #999; font-style: italic; font-weight: bold;">3023844588</p>
-<p>elnaranjofincaagropecuaria@gmail.com</p>
+<p>Tel: 3023844588 | Nequi o Daviplata</p>
 <p>Gracias por su compra</p>
 </div>
 <div class="receipt-footer" style="margin-top:12px;">
@@ -1313,9 +1388,9 @@ this.renderSales();
 return;
 }
 const filtered = this.ventas.filter(v => 
+v.factura.toLowerCase().includes(query.toLowerCase()) ||
 v.cliente.toLowerCase().includes(query.toLowerCase()) ||
-this.getProductLabel(v.producto).toLowerCase().includes(query.toLowerCase()) ||
-v.factura.toLowerCase().includes(query.toLowerCase())
+this.formatDateTime(v.fechaCompleta).toLowerCase().includes(query.toLowerCase())
 );
 const list = document.getElementById('ventas-lista');
 if (filtered.length === 0) {
@@ -1340,9 +1415,28 @@ return `
 <td style="color:${v.debe > 0 ? 'var(--warning-color)' : 'var(--primary)'}">$${(v.debe || 0).toLocaleString('es-CO')}</td>
 <td>${this.formatDateTime(v.fechaCompleta)}</td>
 <td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editSale(${originalIndex})">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteSale(${originalIndex})">🗑️</button>
-<button class="action-btn download-btn" onclick="businessManager.downloadReceipt('${v.id}')">📥</button>
+<button class="action-btn edit-btn" data-tooltip="Editar" onclick="businessManager.editSale(${originalIndex})">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M12 20h9"></path>
+<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+</svg>
+</button>
+<button class="action-btn delete-btn" data-tooltip="Eliminar" onclick="businessManager.deleteSale(${originalIndex})">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M3 6h18"></path>
+<path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+<path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+</svg>
+</button>
+<button class="action-btn download-btn" data-tooltip="Recibo" onclick="businessManager.downloadReceipt('${v.id}')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<path d="M14 2v6h6"></path>
+<path d="M16 13H8"></path>
+<path d="M16 17H8"></path>
+<path d="M10 9H8"></path>
+</svg>
+</button>
 </td>
 </tr>
 `;
@@ -1355,7 +1449,8 @@ return;
 }
 const filtered = this.gastos.filter(g => 
 g.tipo.toLowerCase().includes(query.toLowerCase()) ||
-g.descripcion.toLowerCase().includes(query.toLowerCase())
+g.descripcion.toLowerCase().includes(query.toLowerCase()) ||
+this.formatDateTime(g.fechaCompleta).toLowerCase().includes(query.toLowerCase())
 );
 const list = document.getElementById('gastos-lista');
 if (filtered.length === 0) {
@@ -1380,9 +1475,28 @@ return `
 <td style="color:var(--secondary);font-weight:bold">$${g.monto.toLocaleString('es-CO')}</td>
 <td>${this.formatDateTime(g.fechaCompleta)}</td>
 <td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editExpense(${originalIndex})">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteExpense(${originalIndex})">🗑️</button>
-<button class="action-btn download-btn" onclick="businessManager.downloadExpenseReceipt('${g.id}')">📥</button>
+<button class="action-btn edit-btn" data-tooltip="Editar" onclick="businessManager.editExpense(${originalIndex})">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M12 20h9"></path>
+<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+</svg>
+</button>
+<button class="action-btn delete-btn" data-tooltip="Eliminar" onclick="businessManager.deleteExpense(${originalIndex})">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M3 6h18"></path>
+<path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+<path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+</svg>
+</button>
+<button class="action-btn download-btn" data-tooltip="Recibo" onclick="businessManager.downloadExpenseReceipt('${g.id}')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<path d="M14 2v6h6"></path>
+<path d="M16 13H8"></path>
+<path d="M16 17H8"></path>
+<path d="M10 9H8"></path>
+</svg>
+</button>
 </td>
 </tr>
 `;
@@ -1435,8 +1549,19 @@ list.innerHTML = sorted.map(n => `
 <td style="max-width:300px;word-break:break-word;">${n.texto}</td>
 <td>${this.formatDateTime(n.fechaRegistro)}</td>
 <td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editNote('${n.id}', \`${n.texto.replace(/`/g, '\\`')}\`)">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteNote('${n.id}')">🗑️</button>
+<button class="action-btn edit-btn" data-tooltip="Editar" onclick="businessManager.editNote('${n.id}', \`${n.texto.replace(/`/g, '\\`')}\`)">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M12 20h9"></path>
+<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+</svg>
+</button>
+<button class="action-btn delete-btn" data-tooltip="Eliminar" onclick="businessManager.deleteNote('${n.id}')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M3 6h18"></path>
+<path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+<path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+</svg>
+</button>
 </td>
 </tr>
 `).join('');
@@ -1543,9 +1668,7 @@ this.notify('Error al actualizar', 'error');
 deleteSale(index) {
 const v = this.ventas[index];
 if (!v) return;
-const deletedRecibo = v.factura;
 db.deleteVenta(v.id).then(() => {
-this.renumberRecibosAfter(deletedRecibo);
 this.loadData();
 this.notify('Venta eliminada correctamente');
 }).catch(err => {
@@ -1553,35 +1676,11 @@ console.error('Error eliminando venta:', err);
 this.notify('Error al eliminar', 'error');
 });
 }
-renumberRecibosAfter(deletedReciboNumber) {
-const deletedNum = parseInt(deletedReciboNumber.split('-')[1]);
-const ventasAfter = this.ventas.filter(v => {
-const num = parseInt(v.factura.split('-')[1]);
-return num > deletedNum;
-}).sort((a, b) => {
-return parseInt(a.factura.split('-')[1]) - parseInt(b.factura.split('-')[1]);
-});
-if (ventasAfter.length > 0) {
-db.getAllVentas().then(allVentas => {
-const tx = db.db.transaction(['ventas'], 'readwrite');
-const store = tx.objectStore('ventas');
-ventasAfter.forEach((v, idx) => {
-const venta = allVentas.find(av => av.id === v.id);
-if (venta) {
-const newNumber = deletedNum + idx;
-venta.factura = `R-${String(newNumber).padStart(4, '0')}`;
-store.put(venta);
-}
-});
-});
-this.nextReciboNumber = deletedNum;
-db.updateNextReciboNumber(this.nextReciboNumber);
-}
-}
 editSale(index) {
 const v = this.ventas[index];
 if (!v) return;
 document.getElementById('cliente').value = v.cliente;
+document.getElementById('factura').value = v.factura;
 document.getElementById('producto').value = v.producto;
 document.getElementById('cantidad').value = v.cantidad;
 document.getElementById('unidad-medida').value = v.unidadMedida || 'unidad';
@@ -1689,9 +1788,28 @@ return `
 <td style="color:${v.debe > 0 ? 'var(--warning-color)' : 'var(--primary)'}">$${(v.debe || 0).toLocaleString('es-CO')}</td>
 <td>${this.formatDateTime(v.fechaCompleta)}</td>
 <td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editSale(${originalIndex})">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteSale(${originalIndex})">🗑️</button>
-<button class="action-btn download-btn" onclick="businessManager.downloadReceipt('${v.id}')">📥</button>
+<button class="action-btn edit-btn" data-tooltip="Editar" onclick="businessManager.editSale(${originalIndex})">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M12 20h9"></path>
+<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+</svg>
+</button>
+<button class="action-btn delete-btn" data-tooltip="Eliminar" onclick="businessManager.deleteSale(${originalIndex})">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M3 6h18"></path>
+<path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+<path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+</svg>
+</button>
+<button class="action-btn download-btn" data-tooltip="Recibo" onclick="businessManager.downloadReceipt('${v.id}')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<path d="M14 2v6h6"></path>
+<path d="M16 13H8"></path>
+<path d="M16 17H8"></path>
+<path d="M10 9H8"></path>
+</svg>
+</button>
 </td>
 </tr>
 `;
@@ -1721,9 +1839,28 @@ return `
 <td style="color:var(--secondary);font-weight:bold">$${g.monto.toLocaleString('es-CO')}</td>
 <td>${this.formatDateTime(g.fechaCompleta)}</td>
 <td class="actions">
-<button class="action-btn edit-btn" onclick="businessManager.editExpense(${originalIndex})">✏️</button>
-<button class="action-btn delete-btn" onclick="businessManager.deleteExpense(${originalIndex})">🗑️</button>
-<button class="action-btn download-btn" onclick="businessManager.downloadExpenseReceipt('${g.id}')">📥</button>
+<button class="action-btn edit-btn" data-tooltip="Editar" onclick="businessManager.editExpense(${originalIndex})">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M12 20h9"></path>
+<path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+</svg>
+</button>
+<button class="action-btn delete-btn" data-tooltip="Eliminar" onclick="businessManager.deleteExpense(${originalIndex})">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M3 6h18"></path>
+<path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+<path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+</svg>
+</button>
+<button class="action-btn download-btn" data-tooltip="Recibo" onclick="businessManager.downloadExpenseReceipt('${g.id}')">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<path d="M14 2v6h6"></path>
+<path d="M16 13H8"></path>
+<path d="M16 17H8"></path>
+<path d="M10 9H8"></path>
+</svg>
+</button>
 </td>
 </tr>
 `;
@@ -2012,6 +2149,7 @@ const notas = document.getElementById('notas-venta')?.value.trim();
 const cDebe = parseInt(document.getElementById('cantidad-debe')?.value) || 0;
 const mDebe = parseInt(document.getElementById('monto-debe')?.value) || 0;
 if (!cliente) return businessManager.notify('Cliente es requerido', 'error');
+if (!factura) return businessManager.notify('Número de recibo es requerido', 'error');
 if (!producto) return businessManager.notify('Seleccione un producto', 'error');
 if (cantidad <= 0) return businessManager.notify('Cantidad debe ser mayor a 0', 'error');
 if (precio <= 0) return businessManager.notify('Precio debe ser mayor a 0', 'error');
@@ -2045,8 +2183,8 @@ document.getElementById('agregar-venta').textContent = '➕ Agregar Venta';
 businessManager.addSale(data);
 }
 document.getElementById('cliente').value = '';
-document.getElementById('producto').value = '';
 businessManager.updateReciboInput();
+document.getElementById('producto').value = '';
 document.getElementById('cantidad').value = '1';
 document.getElementById('unidad-medida').value = 'unidad';
 document.getElementById('precio').value = '10000';
