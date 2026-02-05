@@ -7,6 +7,8 @@
 <title>Control Interno | Finca El Naranjo</title>
 <link rel="icon" href="img/logo.png" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root {
 --primary: #FF6F00;
@@ -680,25 +682,100 @@ height: 200%;
 background: radial-gradient(circle, rgba(255, 183, 77, 0.08) 0%, rgba(255, 183, 77, 0) 70%);
 z-index: 0;
 }
-.chart-placeholder {
-height: 200px;
+/* Chart Styles */
+.chart-container {
+position: relative;
+height: 400px;
+width: 100%;
+margin-top: 20px;
+padding: 20px;
+background: white;
+border-radius: 16px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+border: 1px solid var(--border-color);
+}
+.chart-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 16px;
+padding-bottom: 12px;
+border-bottom: 2px solid var(--light-orange);
+}
+.chart-title {
+font-size: 1.3rem;
+font-weight: 700;
+color: var(--dark-orange);
 display: flex;
 align-items: center;
-justify-content: center;
-background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-border-radius: 16px;
-margin-top: 16px;
-color: var(--gray);
-font-size: 1.1rem;
-font-weight: 600;
-position: relative;
-z-index: 1;
-border: 1px dashed var(--light-orange);
+gap: 10px;
 }
-.chart-placeholder i {
-font-size: 3rem;
-margin-right: 16px;
-color: var(--primary);
+.chart-controls {
+display: flex;
+gap: 10px;
+}
+.chart-btn {
+padding: 8px 16px;
+border-radius: 8px;
+border: 2px solid var(--light-orange);
+background: white;
+color: var(--dark-orange);
+font-weight: 600;
+font-size: 0.9rem;
+cursor: pointer;
+transition: var(--transition);
+}
+.chart-btn:hover {
+background: var(--light-orange);
+color: white;
+transform: translateY(-2px);
+}
+.chart-btn.active {
+background: var(--primary);
+color: white;
+border-color: var(--primary);
+}
+.trend-indicator {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+padding: 6px 12px;
+border-radius: 20px;
+font-weight: 600;
+font-size: 0.9rem;
+margin-top: 12px;
+}
+.trend-up {
+background: linear-gradient(135deg, #4CAF50, #2E7D32);
+color: white;
+}
+.trend-down {
+background: linear-gradient(135deg, #F44336, #C62828);
+color: white;
+}
+.trend-stable {
+background: linear-gradient(135deg, #FF9800, #E65100);
+color: white;
+}
+.legend-container {
+display: flex;
+justify-content: center;
+gap: 24px;
+margin-top: 16px;
+flex-wrap: wrap;
+}
+.legend-item {
+display: flex;
+align-items: center;
+gap: 8px;
+font-size: 0.9rem;
+font-weight: 500;
+color: var(--gray);
+}
+.legend-color {
+width: 16px;
+height: 16px;
+border-radius: 4px;
 }
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -724,6 +801,9 @@ font-size: 1.1rem;
 .captcha-text {
 font-size: 1.8rem;
 letter-spacing: 4px;
+}
+.chart-container {
+height: 300px;
 }
 }
 /* Security Badge */
@@ -862,9 +942,35 @@ background: linear-gradient(135deg, #E65100, #BF360C);
 </div>
 </div>
 </div>
-<div class="chart-placeholder">
-<i class="fas fa-chart-bar"></i>
-Gráfico de análisis de ventas y tendencias (implementación futura)
+<!-- Gráfico de Análisis -->
+<div class="chart-container">
+<div class="chart-header">
+<div class="chart-title">
+<i class="fas fa-chart-area"></i>
+<span id="chart-title">Análisis de Ventas - Últimos 30 Días</span>
+</div>
+<div class="chart-controls">
+<button class="chart-btn active" onclick="changeChartPeriod('daily')">Diario</button>
+<button class="chart-btn" onclick="changeChartPeriod('weekly')">Semanal</button>
+<button class="chart-btn" onclick="changeChartPeriod('monthly')">Mensual</button>
+</div>
+</div>
+<canvas id="salesChart"></canvas>
+<div id="trend-indicator" class="trend-indicator"></div>
+<div class="legend-container">
+<div class="legend-item">
+<div class="legend-color" style="background: rgba(255, 111, 0, 0.7);"></div>
+<span>Ventas</span>
+</div>
+<div class="legend-item">
+<div class="legend-color" style="background: rgba(255, 152, 0, 0.7);"></div>
+<span>Gastos</span>
+</div>
+<div class="legend-item">
+<div class="legend-color" style="background: rgba(255, 215, 0, 0.7);"></div>
+<span>Balance</span>
+</div>
+</div>
 </div>
 </div>
 <nav>
@@ -942,6 +1048,9 @@ Tel: 3023844588 | Nequi o Daviplata
 <script>
 // Corregir la asignación de jsPDF
 const { jsPDF } = window.jspdf;
+// Variables globales para los gráficos
+let salesChart = null;
+let currentPeriod = 'daily';
 // === CAPTCHA ===
 function generateCaptcha() {
 const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -976,6 +1085,7 @@ document.getElementById('auth-screen').style.display = 'none';
 document.getElementById('main-content').style.display = 'block';
 showNotification('¡Bienvenido al sistema!', 'success');
 loadDataForDashboard();
+loadChartData();
 } else {
 showNotification('Contraseña incorrecta', 'error');
 document.getElementById('password').value = '';
@@ -1204,6 +1314,457 @@ balanceEl.style.textShadow = '0 0 8px rgba(244, 67, 54, 0.4)';
 } catch (e) {
 console.error('Error cargando datos del dashboard:', e);
 showNotification('Error al cargar datos del dashboard', 'error');
+}
+}
+// === GRÁFICOS DE ANÁLISIS ===
+async function loadChartData() {
+try {
+const ventas = await getAllFromStore('ventas');
+const gastos = await getAllFromStore('gastos');
+// Analizar datos según el período actual
+if (currentPeriod === 'daily') {
+createDailyChart(ventas, gastos);
+} else if (currentPeriod === 'weekly') {
+createWeeklyChart(ventas, gastos);
+} else if (currentPeriod === 'monthly') {
+createMonthlyChart(ventas, gastos);
+}
+} catch (e) {
+console.error('Error cargando datos del gráfico:', e);
+showNotification('Error al cargar datos del gráfico', 'error');
+}
+}
+function changeChartPeriod(period) {
+// Actualizar botones activos
+document.querySelectorAll('.chart-btn').forEach(btn => btn.classList.remove('active'));
+event.target.classList.add('active');
+// Establecer período actual
+currentPeriod = period;
+// Cargar datos del nuevo período
+loadChartData();
+// Actualizar título
+const titles = {
+daily: 'Análisis de Ventas - Últimos 30 Días',
+weekly: 'Análisis de Ventas - Últimas 12 Semanas',
+monthly: 'Análisis de Ventas - Últimos 12 Meses'
+};
+document.getElementById('chart-title').textContent = titles[period];
+}
+function createDailyChart(ventas, gastos) {
+const now = new Date();
+const labels = [];
+const salesData = [];
+const expensesData = [];
+const balanceData = [];
+// Generar datos para los últimos 30 días
+for (let i = 29; i >= 0; i--) {
+const date = new Date(now);
+date.setDate(now.getDate() - i);
+const dateStr = date.toISOString().split('T')[0];
+labels.push(date.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' }));
+// Filtrar ventas y gastos del día
+const daySales = ventas.filter(v => {
+const vDate = new Date(v.fechaCompleta);
+return vDate.toISOString().split('T')[0] === dateStr;
+});
+const dayExpenses = gastos.filter(g => {
+const gDate = new Date(g.fechaCompleta);
+return gDate.toISOString().split('T')[0] === dateStr;
+});
+const salesTotal = daySales.reduce((sum, v) => sum + v.total, 0);
+const expensesTotal = dayExpenses.reduce((sum, g) => sum + g.monto, 0);
+const balance = salesTotal - expensesTotal;
+salesData.push(salesTotal);
+expensesData.push(expensesTotal);
+balanceData.push(balance);
+}
+// Destruir gráfico anterior si existe
+if (salesChart) {
+salesChart.destroy();
+}
+// Crear nuevo gráfico
+const ctx = document.getElementById('salesChart').getContext('2d');
+salesChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: labels,
+datasets: [
+{
+label: 'Ventas',
+data: salesData,
+borderColor: 'rgba(255, 111, 0, 1)',
+backgroundColor: 'rgba(255, 111, 0, 0.1)',
+borderWidth: 3,
+fill: true,
+tension: 0.4,
+pointRadius: 4,
+pointBackgroundColor: 'rgba(255, 111, 0, 1)',
+pointHoverRadius: 6
+},
+{
+label: 'Gastos',
+data: expensesData,
+borderColor: 'rgba(255, 152, 0, 1)',
+backgroundColor: 'rgba(255, 152, 0, 0.1)',
+borderWidth: 3,
+fill: true,
+tension: 0.4,
+pointRadius: 4,
+pointBackgroundColor: 'rgba(255, 152, 0, 1)',
+pointHoverRadius: 6
+},
+{
+label: 'Balance',
+data: balanceData,
+borderColor: 'rgba(255, 215, 0, 1)',
+backgroundColor: 'rgba(255, 215, 0, 0.1)',
+borderWidth: 3,
+fill: true,
+tension: 0.4,
+pointRadius: 4,
+pointBackgroundColor: 'rgba(255, 215, 0, 1)',
+pointHoverRadius: 6,
+type: 'line'
+}
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: {
+display: false
+},
+tooltip: {
+mode: 'index',
+intersect: false,
+backgroundColor: 'rgba(255, 255, 255, 0.95)',
+titleColor: '#333',
+bodyColor: '#333',
+borderColor: 'rgba(255, 111, 0, 0.5)',
+borderWidth: 1,
+padding: 12,
+displayColors: true
+}
+},
+scales: {
+y: {
+beginAtZero: true,
+grid: {
+color: 'rgba(0, 0, 0, 0.05)'
+},
+ticks: {
+callback: function(value) {
+return '$' + value.toLocaleString('es-CO');
+},
+color: '#666'
+},
+title: {
+display: true,
+text: 'Monto ($)',
+color: '#999',
+font: {
+size: 12
+}
+}
+},
+x: {
+grid: {
+color: 'rgba(0, 0, 0, 0.03)'
+},
+ticks: {
+color: '#666'
+}
+}
+},
+interaction: {
+intersect: false,
+mode: 'index'
+},
+animation: {
+duration: 1000,
+easing: 'easeOutQuart'
+}
+}
+});
+// Calcular tendencia
+calculateTrend(balanceData);
+}
+function createWeeklyChart(ventas, gastos) {
+const now = new Date();
+const labels = [];
+const salesData = [];
+const expensesData = [];
+const balanceData = [];
+// Generar datos para las últimas 12 semanas
+for (let i = 11; i >= 0; i--) {
+const startDate = new Date(now);
+startDate.setDate(now.getDate() - (i * 7) - 7);
+const endDate = new Date(now);
+endDate.setDate(now.getDate() - (i * 7));
+labels.push(`Sem ${i + 1}`);
+// Filtrar ventas y gastos de la semana
+const weekSales = ventas.filter(v => {
+const vDate = new Date(v.fechaCompleta);
+return vDate >= startDate && vDate < endDate;
+});
+const weekExpenses = gastos.filter(g => {
+const gDate = new Date(g.fechaCompleta);
+return gDate >= startDate && gDate < endDate;
+});
+const salesTotal = weekSales.reduce((sum, v) => sum + v.total, 0);
+const expensesTotal = weekExpenses.reduce((sum, g) => sum + g.monto, 0);
+const balance = salesTotal - expensesTotal;
+salesData.push(salesTotal);
+expensesData.push(expensesTotal);
+balanceData.push(balance);
+}
+// Destruir gráfico anterior si existe
+if (salesChart) {
+salesChart.destroy();
+}
+// Crear nuevo gráfico
+const ctx = document.getElementById('salesChart').getContext('2d');
+salesChart = new Chart(ctx, {
+type: 'bar',
+data: {
+labels: labels,
+datasets: [
+{
+label: 'Ventas',
+data: salesData,
+backgroundColor: 'rgba(255, 111, 0, 0.7)',
+borderColor: 'rgba(255, 111, 0, 1)',
+borderWidth: 2,
+borderRadius: 8
+},
+{
+label: 'Gastos',
+data: expensesData,
+backgroundColor: 'rgba(255, 152, 0, 0.7)',
+borderColor: 'rgba(255, 152, 0, 1)',
+borderWidth: 2,
+borderRadius: 8
+},
+{
+label: 'Balance',
+data: balanceData,
+backgroundColor: 'rgba(255, 215, 0, 0.7)',
+borderColor: 'rgba(255, 215, 0, 1)',
+borderWidth: 2,
+borderRadius: 8,
+type: 'line',
+fill: false
+}
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: {
+display: false
+},
+tooltip: {
+mode: 'index',
+intersect: false,
+backgroundColor: 'rgba(255, 255, 255, 0.95)',
+titleColor: '#333',
+bodyColor: '#333',
+borderColor: 'rgba(255, 111, 0, 0.5)',
+borderWidth: 1,
+padding: 12
+}
+},
+scales: {
+y: {
+beginAtZero: true,
+grid: {
+color: 'rgba(0, 0, 0, 0.05)'
+},
+ticks: {
+callback: function(value) {
+return '$' + value.toLocaleString('es-CO');
+},
+color: '#666'
+}
+},
+x: {
+grid: {
+color: 'rgba(0, 0, 0, 0.03)'
+},
+ticks: {
+color: '#666'
+}
+}
+},
+interaction: {
+intersect: false,
+mode: 'index'
+}
+}
+});
+// Calcular tendencia
+calculateTrend(balanceData);
+}
+function createMonthlyChart(ventas, gastos) {
+const now = new Date();
+const labels = [];
+const salesData = [];
+const expensesData = [];
+const balanceData = [];
+// Generar datos para los últimos 12 meses
+for (let i = 11; i >= 0; i--) {
+const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+labels.push(monthDate.toLocaleDateString('es-CO', { month: 'short', year: 'numeric' }));
+// Filtrar ventas y gastos del mes
+const monthSales = ventas.filter(v => {
+const vDate = new Date(v.fechaCompleta);
+return vDate.getMonth() === monthDate.getMonth() && vDate.getFullYear() === monthDate.getFullYear();
+});
+const monthExpenses = gastos.filter(g => {
+const gDate = new Date(g.fechaCompleta);
+return gDate.getMonth() === monthDate.getMonth() && gDate.getFullYear() === monthDate.getFullYear();
+});
+const salesTotal = monthSales.reduce((sum, v) => sum + v.total, 0);
+const expensesTotal = monthExpenses.reduce((sum, g) => sum + g.monto, 0);
+const balance = salesTotal - expensesTotal;
+salesData.push(salesTotal);
+expensesData.push(expensesTotal);
+balanceData.push(balance);
+}
+// Destruir gráfico anterior si existe
+if (salesChart) {
+salesChart.destroy();
+}
+// Crear nuevo gráfico
+const ctx = document.getElementById('salesChart').getContext('2d');
+salesChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: labels,
+datasets: [
+{
+label: 'Ventas',
+data: salesData,
+borderColor: 'rgba(255, 111, 0, 1)',
+backgroundColor: 'rgba(255, 111, 0, 0.2)',
+borderWidth: 4,
+fill: true,
+tension: 0.3,
+pointRadius: 6,
+pointBackgroundColor: 'rgba(255, 111, 0, 1)',
+pointHoverRadius: 8,
+pointHoverBackgroundColor: 'rgba(255, 111, 0, 1)'
+},
+{
+label: 'Gastos',
+data: expensesData,
+borderColor: 'rgba(255, 152, 0, 1)',
+backgroundColor: 'rgba(255, 152, 0, 0.2)',
+borderWidth: 4,
+fill: true,
+tension: 0.3,
+pointRadius: 6,
+pointBackgroundColor: 'rgba(255, 152, 0, 1)',
+pointHoverRadius: 8,
+pointHoverBackgroundColor: 'rgba(255, 152, 0, 1)'
+},
+{
+label: 'Balance',
+data: balanceData,
+borderColor: 'rgba(255, 215, 0, 1)',
+backgroundColor: 'rgba(255, 215, 0, 0.2)',
+borderWidth: 4,
+fill: true,
+tension: 0.3,
+pointRadius: 6,
+pointBackgroundColor: 'rgba(255, 215, 0, 1)',
+pointHoverRadius: 8,
+pointHoverBackgroundColor: 'rgba(255, 215, 0, 1)'
+}
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: {
+display: false
+},
+tooltip: {
+mode: 'index',
+intersect: false,
+backgroundColor: 'rgba(255, 255, 255, 0.95)',
+titleColor: '#333',
+bodyColor: '#333',
+borderColor: 'rgba(255, 111, 0, 0.5)',
+borderWidth: 1,
+padding: 12,
+callbacks: {
+label: function(context) {
+return `${context.dataset.label}: $${context.parsed.y.toLocaleString('es-CO')}`;
+}
+}
+}
+},
+scales: {
+y: {
+beginAtZero: false,
+grid: {
+color: 'rgba(0, 0, 0, 0.05)'
+},
+ticks: {
+callback: function(value) {
+return '$' + value.toLocaleString('es-CO');
+},
+color: '#666'
+},
+title: {
+display: true,
+text: 'Monto ($)',
+color: '#999',
+font: {
+size: 12
+}
+}
+},
+x: {
+grid: {
+color: 'rgba(0, 0, 0, 0.03)'
+},
+ticks: {
+color: '#666'
+}
+}
+},
+interaction: {
+intersect: false,
+mode: 'index'
+},
+animation: {
+duration: 1500,
+easing: 'easeOutBounce'
+}
+}
+});
+// Calcular tendencia
+calculateTrend(balanceData);
+}
+function calculateTrend(balanceData) {
+if (balanceData.length < 2) return;
+const lastValue = balanceData[balanceData.length - 1];
+const previousValue = balanceData[balanceData.length - 2];
+const trendIndicator = document.getElementById('trend-indicator');
+if (lastValue > previousValue) {
+trendIndicator.className = 'trend-indicator trend-up';
+trendIndicator.innerHTML = `<i class="fas fa-arrow-up"></i> Balance en aumento: +$${(lastValue - previousValue).toLocaleString('es-CO')}`;
+} else if (lastValue < previousValue) {
+trendIndicator.className = 'trend-indicator trend-down';
+trendIndicator.innerHTML = `<i class="fas fa-arrow-down"></i> Balance en descenso: -$${(previousValue - lastValue).toLocaleString('es-CO')}`;
+} else {
+trendIndicator.className = 'trend-indicator trend-stable';
+trendIndicator.innerHTML = `<i class="fas fa-equals"></i> Balance estable`;
 }
 }
 // Función corregida para generar PDF
